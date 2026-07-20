@@ -1,0 +1,22 @@
+# VyaparAI
+
+> AI business automation platform for Indian MSMEs. Your AI employee that manages invoices, inventory, customers and business insights.
+
+## Overview
+VyaparAI is an AI-powered autonomous business operations assistant. It is not a chatbot — it is a workflow engine: Documents → AI Processing → Business Data → Automation → Predictions → Actions.
+
+## Features
+- AI Invoice Processing: https://vyaparai.vercel.app/features/ai-invoice-processing
+- Inventory AI: https://vyaparai.vercel.app/features/inventory-ai
+- Customer AI: https://vyaparai.vercel.app/features/customer-ai
+- Business Insights: https://vyaparai.vercel.app/features/business-insights
+
+## Solutions
+- Kirana Store: https://vyaparai.vercel.app/solutions/kirana-store
+- Pharmacy: https://vyaparai.vercel.app/solutions/pharmacy
+- Retail Business: https://vyaparai.vercel.app/solutions/retail-business
+
+## Resources
+- Blog: https://vyaparai.vercel.app/blog
+- About: https://vyaparai.vercel.app/about
+- Contact: https://vyaparai.vercel.app/contact
