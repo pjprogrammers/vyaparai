@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
-import { getAdmin } from "@/lib/firebase/admin";
+import { getAdmin, verifyRequest } from "@/lib/firebase/admin";
 import { generateInsights } from "@/lib/ai/gemini";
 import { getInsights, saveInsight } from "@/lib/db";
 import type { Insight } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
+    const auth = await verifyRequest(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { businessId } = await request.json();
     if (!businessId) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
+    }
+    if (businessId !== `biz_${auth.uid}`) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const { db } = getAdmin();
 
@@ -53,10 +60,17 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const auth = await verifyRequest(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const businessId = searchParams.get("businessId");
   if (!businessId) {
     return NextResponse.json({ error: "businessId required" }, { status: 400 });
+  }
+  if (businessId !== `biz_${auth.uid}`) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const insights = await getInsights(businessId);
   return NextResponse.json({ insights });

@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getFirebase } from "@/lib/firebase/client";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/components/auth-provider";
 
 export function InvoiceUploader({ businessId }: { businessId: string }) {
   const [status, setStatus] = useState<"idle" | "uploading" | "processing" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { getIdToken } = useAuth();
 
   async function handleUpload() {
     if (!file) return;
@@ -25,9 +27,12 @@ export function InvoiceUploader({ businessId }: { businessId: string }) {
 
       setStatus("processing");
       setMessage("Running OCR + Gemini extraction…");
+      const token = await getIdToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers.authorization = `Bearer ${token}`;
       const res = await fetch("/api/process-invoice", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ businessId, fileUrl }),
       });
       const data = await res.json();

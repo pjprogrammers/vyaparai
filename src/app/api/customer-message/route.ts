@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { verifyRequest } from "@/lib/firebase/admin";
 import { draftCustomerReply } from "@/lib/ai/customer-assistant";
 import {
   saveCustomerMessage,
@@ -9,6 +10,10 @@ import type { CustomerMessage } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
+    const auth = await verifyRequest(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const { action, businessId } = body;
 
@@ -16,6 +21,9 @@ export async function POST(request: Request) {
       const { query, customer, channel } = body;
       if (!businessId || !query) {
         return NextResponse.json({ error: "businessId and query required" }, { status: 400 });
+      }
+      if (businessId !== `biz_${auth.uid}`) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
       const { inventoryCheck, draftResponse } = await draftCustomerReply(businessId, query);
       const messageId = `msg_${Date.now()}`;
@@ -39,9 +47,14 @@ export async function POST(request: Request) {
       if (!messageId) {
         return NextResponse.json({ error: "messageId required" }, { status: 400 });
       }
-      await updateCustomerMessage(messageId, {
-        status: action === "approve" ? "approved" : "rejected",
-      });
+      if (!businessId || businessId !== `biz_${auth.uid}`) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      await updateCustomerMessage(
+        messageId,
+        { status: action === "approve" ? "approved" : "rejected" },
+        businessId,
+      );
       return NextResponse.json({ ok: true, status: action === "approve" ? "approved" : "rejected" });
     }
 
@@ -53,10 +66,17 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const auth = await verifyRequest(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const businessId = searchParams.get("businessId");
   if (!businessId) {
     return NextResponse.json({ error: "businessId required" }, { status: 400 });
+  }
+  if (businessId !== `biz_${auth.uid}`) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const messages = await getPendingMessages(businessId);
   return NextResponse.json({ messages });

@@ -13,8 +13,8 @@ export async function ocrWithTesseract(fileUrl: string): Promise<string> {
 }
 
 // Stub for Google Cloud Vision (requires API key + billing)
-export async function ocrWithVision(_fileUrl: string): Promise<string> {
-  throw new Error("Google Cloud Vision OCR not configured in MVP");
+export async function ocrWithVision(fileUrl: string): Promise<string> {
+  throw new Error(`Google Cloud Vision OCR not configured in MVP (attempted: ${fileUrl})`);
 }
 
 export async function extractText(fileUrl: string): Promise<string> {

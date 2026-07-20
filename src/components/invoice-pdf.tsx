@@ -6,7 +6,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
 } from "@react-pdf/renderer";
 import { computeInvoiceTotals } from "@/lib/invoice";
 import type { Business, GeneratedInvoice, InvoiceItem } from "@/lib/types";

@@ -32,19 +32,24 @@ interface DashData {
 const DEMO_BUSINESS = "biz_demo";
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, getIdToken } = useAuth();
   const [data, setData] = useState<DashData | null>(null);
-  const [businessName, setBusinessName] = useState("ABC Kirana Store");
+  const businessName = "ABC Kirana Store";
 
   const businessId = user?.uid ? `biz_${user.uid}` : DEMO_BUSINESS;
 
   useEffect(() => {
     if (loading) return;
-    fetch(`/api/dashboard?businessId=${businessId}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setData(d))
-      .catch(() => setData(null));
-  }, [businessId, loading]);
+    (async () => {
+      const headers: Record<string, string> = {};
+      const token = user ? await getIdToken() : null;
+      if (token) headers.authorization = `Bearer ${token}`;
+      fetch(`/api/dashboard?businessId=${businessId}`, { headers })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => setData(d))
+        .catch(() => setData(null));
+    })();
+  }, [businessId, loading, user, getIdToken]);
 
   if (loading) {
     return <div className="p-10 text-center text-slate-500">Loading…</div>;
@@ -129,12 +134,16 @@ export default function DashboardPage() {
                 size="sm"
                 variant="outline"
                 onClick={async () => {
+                  const token = user ? await getIdToken() : null;
+                  const authHeader: Record<string, string> = token
+                    ? { authorization: `Bearer ${token}` }
+                    : {};
                   await fetch("/api/ai-insights", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json", ...authHeader },
                     body: JSON.stringify({ businessId }),
                   });
-                  fetch(`/api/dashboard?businessId=${businessId}`)
+                  fetch(`/api/dashboard?businessId=${businessId}`, { headers: authHeader })
                     .then((r) => (r.ok ? r.json() : null))
                     .then((d) => d && setData(d));
                 }}

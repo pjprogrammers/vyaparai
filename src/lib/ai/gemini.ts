@@ -12,19 +12,32 @@ function getModel() {
   return genAI.getGenerativeModel({ model: MODEL });
 }
 
+function extractJson(raw: string): unknown {
+  let jsonStr = raw.trim();
+  // Strip markdown code fences if present
+  if (jsonStr.startsWith("```")) {
+    jsonStr = jsonStr.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  }
+  const jsonStart = jsonStr.indexOf("{");
+  const jsonEnd = jsonStr.lastIndexOf("}");
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("Gemini did not return valid JSON");
+  }
+  const slice = jsonStr.slice(jsonStart, jsonEnd + 1);
+  try {
+    return JSON.parse(slice);
+  } catch {
+    throw new Error("Failed to parse JSON from Gemini response");
+  }
+}
+
 export async function parseInvoiceWithGemini(text: string): Promise<ParsedInvoice> {
   const model = getModel();
   const result = await model.generateContent(extractInvoicePrompt + "\n\n" + text);
   const response = await result.response;
   const raw = response.text();
 
-  const jsonStart = raw.indexOf("{");
-  const jsonEnd = raw.lastIndexOf("}");
-  if (jsonStart === -1 || jsonEnd === -1) {
-    throw new Error("Gemini did not return JSON");
-  }
-  const jsonStr = raw.slice(jsonStart, jsonEnd + 1);
-  const parsed = JSON.parse(jsonStr);
+  const parsed = extractJson(raw);
   return invoiceSchema.parse(parsed);
 }
 
@@ -87,10 +100,7 @@ export async function parseExpenseWithGemini(text: string): Promise<{
   const model = getModel();
   const result = await model.generateContent(extractExpensePrompt + "\n\n" + text);
   const raw = (await result.response).text();
-  const jsonStart = raw.indexOf("{");
-  const jsonEnd = raw.lastIndexOf("}");
-  if (jsonStart === -1 || jsonEnd === -1) throw new Error("Gemini did not return JSON");
-  const parsed = JSON.parse(raw.slice(jsonStart, jsonEnd + 1));
+  const parsed = extractJson(raw) as { category?: unknown; amount?: unknown; date?: unknown };
   return {
     category: String(parsed.category ?? "Other"),
     amount: Number(parsed.amount ?? 0),

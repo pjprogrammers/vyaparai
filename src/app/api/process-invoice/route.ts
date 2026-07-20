@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdmin } from "@/lib/firebase/admin";
+import { getAdmin, verifyRequest } from "@/lib/firebase/admin";
 import { parseInvoiceWithGemini } from "@/lib/ai/gemini";
 import { extractText } from "@/lib/ai/ocr";
 import {
@@ -12,9 +12,16 @@ import type { Invoice } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
+    const auth = await verifyRequest(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { businessId, fileUrl, rawText } = await request.json();
     if (!businessId) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
+    }
+    if (businessId !== `biz_${auth.uid}`) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // 1. Get text: either already-extracted OCR text or run OCR on a file URL

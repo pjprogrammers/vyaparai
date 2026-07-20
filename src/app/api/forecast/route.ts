@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
-import { getAdmin } from "@/lib/firebase/admin";
+import { getAdmin, verifyRequest } from "@/lib/firebase/admin";
 import { forecastSales } from "@/lib/ai/gemini";
 
 export async function POST(request: Request) {
   try {
+    const auth = await verifyRequest(request);
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { businessId } = await request.json();
     if (!businessId) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
+    }
+    if (businessId !== `biz_${auth.uid}`) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const { db } = getAdmin();
     const snap = await db

@@ -224,8 +224,19 @@ export async function getPendingMessages(businessId: string): Promise<CustomerMe
 export async function updateCustomerMessage(
   messageId: string,
   data: Partial<CustomerMessage>,
+  businessId?: string,
 ) {
   const { db } = getAdmin();
+  if (businessId) {
+    const ref = db.collection("customerMessages").doc(messageId);
+    const existing = await ref.get();
+    if (!existing.exists) {
+      throw new Error("Message not found");
+    }
+    if (existing.data()?.businessId !== businessId) {
+      throw new Error("Forbidden");
+    }
+  }
   await db.collection("customerMessages").doc(messageId).update(data);
 }
 

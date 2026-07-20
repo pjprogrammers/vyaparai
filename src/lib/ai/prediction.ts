@@ -3,7 +3,7 @@ import {
   getPreferredSupplier,
   getProducts,
 } from "@/lib/db";
-import type { Product, StockPrediction } from "@/lib/types";
+import type { StockPrediction } from "@/lib/types";
 
 const REORDER_DAYS_BUFFER = 7;
 

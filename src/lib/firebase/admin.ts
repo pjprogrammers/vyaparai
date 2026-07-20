@@ -8,7 +8,14 @@ export function initAdmin() {
   if (getApps().length === 0) {
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     if (!projectId) {
-      throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set");
+      throw new Error(
+        "Firebase Admin is not configured. Set NEXT_PUBLIC_FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY in your environment (see .env.example)."
+      );
+    }
+    if (!process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) {
+      throw new Error(
+        "Firebase Admin credentials missing. Set FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY in your environment (see .env.example)."
+      );
     }
     app = initializeApp({
       projectId,
@@ -27,4 +34,29 @@ export function initAdmin() {
 export function getAdmin() {
   if (!getApps().length) return initAdmin();
   return { app: getApp(), auth: getAuth(getApp()), db: getFirestore(getApp()) };
+}
+
+export interface AuthedRequest {
+  uid: string;
+  token: string;
+}
+
+/**
+ * Verifies the Firebase ID token from the Authorization: Bearer <idToken> header.
+ * Returns the uid, or null when no/invalid token is present.
+ */
+export async function verifyRequest(
+  request: Request,
+): Promise<AuthedRequest | null> {
+  const header = request.headers.get("authorization") || "";
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) return null;
+  const token = match[1];
+  try {
+    const { auth } = getAdmin();
+    const decoded = await auth.verifyIdToken(token);
+    return { uid: decoded.uid, token };
+  } catch {
+    return null;
+  }
 }

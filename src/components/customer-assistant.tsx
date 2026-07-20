@@ -4,21 +4,26 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/components/auth-provider";
 
 export function CustomerAssistant({ businessId }: { businessId: string }) {
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState<{ messageId: string; draftResponse: string; inventoryCheck: string } | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "sent">("idle");
   const [message, setMessage] = useState("");
+  const { getIdToken } = useAuth();
 
   async function handleDraft() {
     if (!query) return;
     setStatus("loading");
     setMessage("Checking inventory + drafting reply…");
     try {
+      const token = await getIdToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers.authorization = `Bearer ${token}`;
       const res = await fetch("/api/customer-message", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ action: "draft", businessId, query, customer: "WhatsApp User", channel: "whatsapp" }),
       });
       const data = await res.json();
@@ -34,12 +39,15 @@ export function CustomerAssistant({ businessId }: { businessId: string }) {
 
   async function decide(approve: boolean) {
     if (!draft) return;
+    const token = await getIdToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers.authorization = `Bearer ${token}`;
     const res = await fetch("/api/customer-message", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ action: approve ? "approve" : "reject", messageId: draft.messageId }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
       setStatus("sent");
       setMessage(approve ? "✅ Reply approved and sent to customer." : "Reply rejected.");

@@ -8,6 +8,7 @@ import { pdf } from "@react-pdf/renderer";
 import { InvoicePdf } from "@/components/invoice-pdf";
 import { computeInvoiceTotals } from "@/lib/invoice";
 import type { Business, InvoiceItem } from "@/lib/types";
+import { useAuth } from "@/components/auth-provider";
 
 interface LineItem {
   name: string;
@@ -27,6 +28,7 @@ export function InvoiceGenerator({
   const [items, setItems] = useState<LineItem[]>([{ name: "", quantity: 1, price: 0 }]);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  const { getIdToken } = useAuth();
 
   function updateItem(i: number, patch: Partial<LineItem>) {
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
@@ -44,9 +46,12 @@ export function InvoiceGenerator({
       return;
     }
     try {
+      const token = await getIdToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers.authorization = `Bearer ${token}`;
       const res = await fetch("/api/generate-invoice", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ businessId, customer, items: clean, paymentMethod }),
       });
       const data = await res.json();
