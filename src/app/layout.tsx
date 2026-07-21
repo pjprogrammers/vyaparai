@@ -56,6 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: siteConfig.twitter,
+    creator: siteConfig.twitter,
     title: "VyaparAI | AI Automation Assistant for MSMEs",
     description:
       "Your AI employee that manages invoices, inventory and business operations.",
@@ -82,7 +84,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

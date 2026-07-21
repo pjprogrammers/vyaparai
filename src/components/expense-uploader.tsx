@@ -54,7 +54,7 @@ export function ExpenseUploader({ businessId }: { businessId: string }) {
           type="file"
           accept="image/*,application/pdf"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700"
+          className="block w-full text-sm text-slate-400 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-300"
         />
         <Button
           onClick={handleUpload}
@@ -64,7 +64,7 @@ export function ExpenseUploader({ businessId }: { businessId: string }) {
           {status === "processing" ? "Extracting…" : "Extract Expense"}
         </Button>
         {message && (
-          <p className={status === "error" ? "text-sm text-red-600" : "text-sm text-emerald-600"}>
+          <p className={status === "error" ? "text-sm text-red-400" : "text-sm text-emerald-400"}>
             {message}
           </p>
         )}

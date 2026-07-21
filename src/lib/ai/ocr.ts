@@ -13,8 +13,8 @@ export async function ocrWithTesseract(fileUrl: string): Promise<string> {
 }
 
 // Stub for Google Cloud Vision (requires API key + billing)
-export async function ocrWithVision(fileUrl: string): Promise<string> {
-  throw new Error(`Google Cloud Vision OCR not configured in MVP (attempted: ${fileUrl})`);
+export async function ocrWithVision(_fileUrl: string): Promise<string> {
+  throw new Error("Google Cloud Vision OCR is not configured in MVP. Set OCR_PROVIDER=tesseract.");
 }
 
 export async function extractText(fileUrl: string): Promise<string> {
@@ -24,6 +24,11 @@ export async function extractText(fileUrl: string): Promise<string> {
 }
 
 export async function parseInvoiceJson(text: string): Promise<ParsedInvoice> {
-  // Forward to Gemini on the server; this helper validates shape.
-  return invoiceSchema.parse(JSON.parse(text));
+  let json: unknown;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error("Failed to parse invoice JSON — the OCR output was not valid JSON.");
+  }
+  return invoiceSchema.parse(json);
 }

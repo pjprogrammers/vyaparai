@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyRequest } from "@/lib/firebase/admin";
-import { saveGeneratedInvoice } from "@/lib/db";
+import { saveGeneratedInvoice, upsertCustomerOnSale, logAuditEvent } from "@/lib/db";
 import { computeInvoiceTotals } from "@/lib/invoice";
 import type { GeneratedInvoice, InvoiceItem } from "@/lib/types";
 
@@ -34,7 +34,21 @@ export async function POST(request: Request) {
       date: new Date().toISOString().split("T")[0],
     };
     await saveGeneratedInvoice(inv);
-    return NextResponse.json({ ok: true, invoice: inv });
+
+    // Upsert customer purchase history
+    const customerId = await upsertCustomerOnSale(businessId, customer, total);
+
+    // Audit log
+    await logAuditEvent({
+      businessId,
+      action: "invoice_generated",
+      entityType: "invoice",
+      entityId: invoiceId,
+      details: `Customer: ${customer}, Amount: ₹${total}`,
+      performedBy: auth.uid,
+    });
+
+    return NextResponse.json({ ok: true, invoice: { ...inv, customerId } });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

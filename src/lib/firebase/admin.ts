@@ -38,12 +38,13 @@ export function getAdmin() {
 
 export interface AuthedRequest {
   uid: string;
+  email: string | null;
   token: string;
 }
 
 /**
  * Verifies the Firebase ID token from the Authorization: Bearer <idToken> header.
- * Returns the uid, or null when no/invalid token is present.
+ * Returns uid + email, or null when no/invalid token is present.
  */
 export async function verifyRequest(
   request: Request,
@@ -55,8 +56,12 @@ export async function verifyRequest(
   try {
     const { auth } = getAdmin();
     const decoded = await auth.verifyIdToken(token);
-    return { uid: decoded.uid, token };
+    return { uid: decoded.uid, email: decoded.email ?? null, token };
   } catch {
     return null;
   }
+}
+
+export function getAdminDb() {
+  return getAdmin().db;
 }

@@ -30,26 +30,26 @@ const columns = [
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
+    <footer className="border-t border-slate-800 bg-slate-950">
       <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 sm:grid-cols-2 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2 text-lg font-bold text-slate-900">
+          <div className="flex items-center gap-2 text-lg font-bold text-white">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
               V
             </span>
             VyaparAI
           </div>
-          <p className="mt-3 max-w-xs text-sm text-slate-500">
+          <p className="mt-3 max-w-xs text-sm text-slate-400">
             AI-powered business automation assistant for Indian MSMEs.
           </p>
         </div>
         {columns.map((col) => (
           <div key={col.title}>
-            <h3 className="text-sm font-semibold text-slate-900">{col.title}</h3>
+            <h3 className="text-sm font-semibold text-white">{col.title}</h3>
             <ul className="mt-3 space-y-2">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-slate-500 transition hover:text-indigo-600">
+                  <Link href={l.href} className="text-sm text-slate-400 transition hover:text-white">
                     {l.label}
                   </Link>
                 </li>
@@ -58,7 +58,7 @@ export function MarketingFooter() {
           </div>
         ))}
       </div>
-      <div className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
+      <div className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
         © {new Date().getFullYear()} VyaparAI. All rights reserved. Made in India.
       </div>
     </footer>

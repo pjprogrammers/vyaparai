@@ -23,6 +23,13 @@ export interface Business {
   language: string;
   owner: string;
   createdAt: string;
+  logoUrl?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  upiId?: string;
+  bankDetails?: string;
+  signatureUrl?: string;
 }
 
 export interface Product {
@@ -33,14 +40,18 @@ export interface Product {
   minimumStock: number;
   unit?: string;
   businessId: string;
-  // moving average daily usage (computed by prediction engine)
+  supplierId?: string;
   avgDailyUsage?: number;
 }
+
+export type SaleItem = InvoiceItem;
 
 export interface InvoiceItem {
   name: string;
   quantity: number;
   price: number;
+  hsn?: string;
+  discount?: number;
 }
 
 export interface Invoice {
@@ -58,6 +69,7 @@ export interface Invoice {
 export interface Sale {
   saleId: string;
   customer: string;
+  customerId?: string;
   items: InvoiceItem[];
   amount: number;
   date: string;
@@ -107,11 +119,96 @@ export interface GeneratedInvoice {
   invoiceId: string;
   businessId: string;
   customer: string;
+  customerId?: string;
   items: InvoiceItem[];
   subtotal: number;
   gst: number;
   total: number;
+  discount?: number;
   paymentMethod: string;
   date: string;
   storageUrl?: string;
+}
+
+// ---- NEW: Customer Management ----
+export interface Customer {
+  customerId: string;
+  businessId: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  totalPurchases: number;
+  outstandingBalance: number;
+  lastPurchaseDate?: string;
+  createdAt: string;
+}
+
+// ---- NEW: Supplier ----
+export interface Supplier {
+  supplierId: string;
+  businessId: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  gstNumber?: string;
+  createdAt: string;
+}
+
+// ---- NEW: Inventory Transaction Log ----
+export interface InventoryLog {
+  logId: string;
+  businessId: string;
+  productId: string;
+  productName: string;
+  type: "purchase" | "sale" | "adjustment" | "return";
+  quantityChange: number;
+  previousQuantity: number;
+  newQuantity: number;
+  referenceId?: string;
+  note?: string;
+  createdAt: string;
+}
+
+// ---- NEW: Notification ----
+export interface Notification {
+  notificationId: string;
+  businessId: string;
+  type: "low_stock" | "invoice_processed" | "expense_added" | "forecast_ready" | "ai_recommendation" | "pending_payment" | "sale_recorded";
+  title: string;
+  message: string;
+  read: boolean;
+  actionUrl?: string;
+  createdAt: string;
+}
+
+// ---- NEW: Report ----
+export interface Report {
+  reportId: string;
+  businessId: string;
+  period: "daily" | "weekly" | "monthly" | "yearly";
+  startDate: string;
+  endDate: string;
+  totalRevenue: number;
+  totalExpenses: number;
+  profit: number;
+  inventoryValue: number;
+  topProducts: { name: string; quantity: number; revenue: number }[];
+  worstProducts: { name: string; quantity: number; revenue: number }[];
+  forecast: string;
+  growth: number;
+  generatedAt: string;
+}
+
+// ---- NEW: Audit Log ----
+export interface AuditLog {
+  logId: string;
+  businessId: string;
+  action: string;
+  entityType: "invoice" | "sale" | "expense" | "product" | "customer" | "message" | "report";
+  entityId: string;
+  details?: string;
+  performedBy: string;
+  createdAt: string;
 }

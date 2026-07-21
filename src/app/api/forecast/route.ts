@@ -21,8 +21,14 @@ export async function POST(request: Request) {
       .where("businessId", "==", businessId)
       .orderBy("date", "asc")
       .get();
+    if (snap.empty) {
+      return NextResponse.json({
+        ok: true,
+        prediction: "Not enough sales data yet. Start recording sales to get forecasts.",
+      });
+    }
     const history = snap.docs.map((d) => `${d.data().date}: ₹${d.data().amount}`).join("\n");
-    const prediction = await forecastSales(history || "No sales history yet");
+    const prediction = await forecastSales(history);
     return NextResponse.json({ ok: true, prediction });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
