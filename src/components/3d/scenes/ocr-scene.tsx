@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneVisible } from "../camera-rig";
+import { sharedDummy } from "../scene-cache";
 
 export function OCRScene() {
   return (
@@ -28,6 +29,11 @@ export function OCRScene() {
   );
 }
 
+const docMat = new THREE.MeshStandardMaterial({ color: "#1a1a1a", metalness: 0.3, roughness: 0.7, emissive: "#facc15", emissiveIntensity: 0.05 });
+const lineMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 0.5, transparent: true, opacity: 0.4 });
+const tableMat = new THREE.MeshStandardMaterial({ color: "#f59e0b", emissive: "#f59e0b", emissiveIntensity: 0.3, transparent: true, opacity: 0.3 });
+const summaryMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 0.8, transparent: true, opacity: 0.15 });
+
 function InvoiceDocument() {
   const ref = useRef<THREE.Group>(null!);
   const visible = useSceneVisible(1);
@@ -41,56 +47,30 @@ function InvoiceDocument() {
 
   return (
     <group ref={ref}>
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} material={docMat}>
         <planeGeometry args={[2.5, 3.5]} />
-        <meshStandardMaterial
-          color="#1a1a1a"
-          metalness={0.3}
-          roughness={0.7}
-          emissive="#facc15"
-          emissiveIntensity={0.05}
-        />
       </mesh>
 
       {[0.8, 0.4, 0, -0.4, -0.8].map((y, i) => (
-        <mesh key={i} position={[-0.5, y, 0.01]}>
+        <mesh key={i} position={[-0.5, y, 0.01]} material={lineMat}>
           <planeGeometry args={[1.5, 0.06]} />
-          <meshStandardMaterial
-            color="#facc15"
-            emissive="#facc15"
-            emissiveIntensity={0.5}
-            transparent
-            opacity={0.4 + i * 0.05}
-          />
         </mesh>
       ))}
 
       {[0.6, 0.1, -0.3].map((y, i) => (
-        <mesh key={`table-${i}`} position={[0.3, y, 0.01]}>
+        <mesh key={`table-${i}`} position={[0.3, y, 0.01]} material={tableMat}>
           <planeGeometry args={[1.2, 0.03]} />
-          <meshStandardMaterial
-            color="#f59e0b"
-            emissive="#f59e0b"
-            emissiveIntensity={0.3}
-            transparent
-            opacity={0.3}
-          />
         </mesh>
       ))}
 
-      <mesh position={[0.6, -1.2, 0.01]}>
+      <mesh position={[0.6, -1.2, 0.01]} material={summaryMat}>
         <planeGeometry args={[1.0, 0.25]} />
-        <meshStandardMaterial
-          color="#facc15"
-          emissive="#facc15"
-          emissiveIntensity={0.8}
-          transparent
-          opacity={0.15}
-        />
       </mesh>
     </group>
   );
 }
+
+const laserMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 3, transparent: true, opacity: 0.8 });
 
 function LaserScanner() {
   const ref = useRef<THREE.Mesh>(null!);
@@ -102,19 +82,13 @@ function LaserScanner() {
   });
 
   return (
-    <mesh ref={ref} position={[0, 0, 0.1]}>
+    <mesh ref={ref} position={[0, 0, 0.1]} material={laserMat}>
       <planeGeometry args={[3, 0.02]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={3}
-        transparent
-        opacity={0.8}
-      />
     </mesh>
   );
 }
 
+/* InstancedMesh for floating characters — 26 individual meshes → 1 */
 function FloatingCharacters() {
   const chars = useMemo(() => {
     const text = "INVOICE GST TAX ITEM TOTAL";
@@ -128,53 +102,50 @@ function FloatingCharacters() {
     }));
   }, []);
 
-  return (
-    <group>
-      {chars.map((c, i) => (
-        <FloatingChar key={i} {...c} />
-      ))}
-    </group>
-  );
+  return <FloatingCharsInstanced chars={chars} />;
 }
 
-function FloatingChar({
-  x,
-  y,
-  z,
-  speed,
-  phase,
+function FloatingCharsInstanced({
+  chars,
 }: {
-  char: string;
-  x: number;
-  y: number;
-  z: number;
-  speed: number;
-  phase: number;
+  chars: { char: string; x: number; y: number; z: number; speed: number; phase: number }[];
 }) {
-  const ref = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
   const visible = useSceneVisible(1);
 
+  const charMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#facc15",
+    emissive: "#facc15",
+    emissiveIntensity: 1,
+    transparent: true,
+    opacity: 0.4,
+  }), []);
+
   useFrame((state) => {
-    if (!visible || !ref.current) return;
+    if (!visible || !meshRef.current) return;
     const t = state.clock.elapsedTime;
-    ref.current.position.y = y + Math.sin(t * speed + phase) * 0.2;
-    (ref.current.material as THREE.MeshStandardMaterial).opacity = 0.3 + Math.sin(t * speed + phase) * 0.2;
+
+    chars.forEach((c, i) => {
+      sharedDummy.position.set(
+        c.x,
+        c.y + Math.sin(t * c.speed + c.phase) * 0.2,
+        c.z,
+      );
+      sharedDummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, sharedDummy.matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <mesh ref={ref} position={[x, y, z]}>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, chars.length]}>
       <boxGeometry args={[0.08, 0.08, 0.01]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={1}
-        transparent
-        opacity={0.4}
-      />
-    </mesh>
+      <primitive object={charMat} attach="material" />
+    </instancedMesh>
   );
 }
 
+/* InstancedMesh for 6 output bars — 6 draw calls → 1 */
 function OutputDisplay() {
   const bars = useMemo(
     () =>
@@ -190,47 +161,48 @@ function OutputDisplay() {
     <group rotation={[-0.3, 0, 0]}>
       <mesh position={[0, 0, -0.01]}>
         <planeGeometry args={[2.5, 1.5]} />
-        <meshStandardMaterial
-          color="#0a0a0a"
-          emissive="#facc15"
-          emissiveIntensity={0.03}
-        />
+        <meshStandardMaterial color="#0a0a0a" emissive="#facc15" emissiveIntensity={0.03} />
       </mesh>
 
-      {bars.map((bar, i) => (
-        <OutputBar key={i} {...bar} />
-      ))}
+      <OutputBarsInstanced bars={bars} />
     </group>
   );
 }
 
-function OutputBar({
-  x,
-  height,
-  delay,
+function OutputBarsInstanced({
+  bars,
 }: {
-  x: number;
-  height: number;
-  delay: number;
+  bars: { x: number; height: number; delay: number }[];
 }) {
-  const ref = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
   const visible = useSceneVisible(1);
 
+  const barMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#facc15",
+    emissive: "#facc15",
+    emissiveIntensity: 0.8,
+    transparent: true,
+    opacity: 0.6,
+  }), []);
+
   useFrame((state) => {
-    if (!visible || !ref.current) return;
-    ref.current.scale.y = Math.min(1, Math.max(0, (state.clock.elapsedTime - delay) * 2));
+    if (!visible || !meshRef.current) return;
+    const t = state.clock.elapsedTime;
+
+    bars.forEach((bar, i) => {
+      const scaleY = Math.min(1, Math.max(0, (t - bar.delay) * 2));
+      sharedDummy.position.set(bar.x, bar.height / 2 - 0.5, 0.01);
+      sharedDummy.scale.set(0.2, bar.height * scaleY, 0.02);
+      sharedDummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, sharedDummy.matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <mesh ref={ref} position={[x, height / 2 - 0.5, 0.01]}>
-      <boxGeometry args={[0.2, height, 0.02]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={0.8}
-        transparent
-        opacity={0.6}
-      />
-    </mesh>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, bars.length]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <primitive object={barMat} attach="material" />
+    </instancedMesh>
   );
 }

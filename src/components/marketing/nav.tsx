@@ -31,7 +31,7 @@ export function MarketingNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-4 py-2 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+                className="rounded-lg px-4 py-2 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
               >
                 {link.label}
               </Link>
@@ -41,13 +41,13 @@ export function MarketingNav() {
           <div className="hidden items-center gap-3 lg:flex">
             <Link
               href="/auth"
-              className="rounded-lg px-4 py-2 text-sm text-neutral-400 transition-colors hover:text-white"
+              className="rounded-lg px-4 py-2 text-sm text-neutral-400 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Log in
             </Link>
             <Link
               href="/auth"
-              className="rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 px-5 py-2 text-sm font-semibold text-black transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-lg hover:shadow-yellow-500/20"
+              className="rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 px-5 py-2 text-sm font-semibold text-black transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-lg hover:shadow-yellow-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Start Free
             </Link>
@@ -55,7 +55,7 @@ export function MarketingNav() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500 lg:hidden"
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
           >
@@ -91,7 +91,7 @@ export function MarketingNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block rounded-lg px-4 py-3 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+                  className="block rounded-lg px-4 py-3 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
                 >
                   {link.label}
                 </Link>

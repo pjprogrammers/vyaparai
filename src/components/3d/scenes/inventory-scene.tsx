@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneVisible } from "../camera-rig";
+import { sharedDummy } from "../scene-cache";
 
 export function InventoryScene() {
   return (
@@ -24,16 +25,16 @@ export function InventoryScene() {
   );
 }
 
+/* Shared geometry + material for shelves (15 meshes share these) */
+const shelfGeo = new THREE.BoxGeometry(0.8, 0.03, 0.6);
+const shelfMat = new THREE.MeshStandardMaterial({ color: "#1a1a1a", metalness: 0.6, roughness: 0.3 });
+const floorMat = new THREE.MeshStandardMaterial({ color: "#141414", metalness: 0.8, roughness: 0.2 });
+
 function WarehouseStructure() {
   return (
     <group>
-      <mesh position={[0, -1.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, -1.5, 0]} rotation={[-Math.PI / 2, 0, 0]} material={floorMat}>
         <planeGeometry args={[6, 4]} />
-        <meshStandardMaterial
-          color="#141414"
-          metalness={0.8}
-          roughness={0.2}
-        />
       </mesh>
 
       {[-2, -1, 0, 1, 2].map((x) => (
@@ -44,12 +45,6 @@ function WarehouseStructure() {
 }
 
 function ShelfRow({ x }: { x: number }) {
-  const shelfGeo = useMemo(() => new THREE.BoxGeometry(0.8, 0.03, 0.6), []);
-  const shelfMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: "#1a1a1a", metalness: 0.6, roughness: 0.3 }),
-    [],
-  );
-
   return (
     <group position={[x, 0, 0]}>
       {[0, 0.6, 1.2].map((y) => (
@@ -58,6 +53,9 @@ function ShelfRow({ x }: { x: number }) {
     </group>
   );
 }
+
+const beltMat = new THREE.MeshStandardMaterial({ color: "#1a1a1a", emissive: "#facc15", emissiveIntensity: 0.05 });
+const boxMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 0.3, transparent: true, opacity: 0.5 });
 
 function ConveyorBelt() {
   const ref = useRef<THREE.Group>(null!);
@@ -75,31 +73,20 @@ function ConveyorBelt() {
 
   return (
     <group ref={ref} position={[0, -1, 1.5]}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} material={beltMat}>
         <planeGeometry args={[5, 0.3]} />
-        <meshStandardMaterial
-          color="#1a1a1a"
-          emissive="#facc15"
-          emissiveIntensity={0.05}
-        />
       </mesh>
 
       {Array.from({ length: 4 }, (_, i) => (
-        <mesh key={i} position={[i * 0.8 - 1.2, 0.15, 0]}>
+        <mesh key={i} position={[i * 0.8 - 1.2, 0.15, 0]} material={boxMat}>
           <boxGeometry args={[0.3, 0.2, 0.3]} />
-          <meshStandardMaterial
-            color="#facc15"
-            emissive="#facc15"
-            emissiveIntensity={0.3}
-            transparent
-            opacity={0.5}
-          />
         </mesh>
       ))}
     </group>
   );
 }
 
+/* InstancedMesh for 8 inventory bars — 8 draw calls → 1 */
 function InventoryBars() {
   const bars = useMemo(
     () =>
@@ -111,48 +98,41 @@ function InventoryBars() {
     [],
   );
 
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
+  const visible = useSceneVisible(2);
+
+  const barMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#facc15",
+    emissive: "#facc15",
+    emissiveIntensity: 0.6,
+    transparent: true,
+    opacity: 0.5,
+  }), []);
+
+  useFrame((state) => {
+    if (!visible || !meshRef.current) return;
+    const t = state.clock.elapsedTime;
+    bars.forEach((bar, i) => {
+      const s = Math.sin(t * bar.speed + i * 0.5) * 0.3 + 0.7;
+      sharedDummy.position.set(bar.x, bar.maxHeight / 2, 0);
+      sharedDummy.scale.set(0.3, bar.maxHeight * s, 0.1);
+      sharedDummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, sharedDummy.matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
   return (
-    <group position={[0, -0.5, -1.5]} rotation={[0, 0, 0]}>
-      {bars.map((bar, i) => (
-        <InventoryBar key={i} {...bar} index={i} />
-      ))}
+    <group position={[0, -0.5, -1.5]}>
+      <instancedMesh ref={meshRef} args={[undefined, undefined, bars.length]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <primitive object={barMat} attach="material" />
+      </instancedMesh>
     </group>
   );
 }
 
-function InventoryBar({
-  x,
-  maxHeight,
-  speed,
-  index,
-}: {
-  x: number;
-  maxHeight: number;
-  speed: number;
-  index: number;
-}) {
-  const ref = useRef<THREE.Mesh>(null!);
-  const visible = useSceneVisible(2);
-
-  useFrame((state) => {
-    if (!visible || !ref.current) return;
-    ref.current.scale.y = Math.sin(state.clock.elapsedTime * speed + index * 0.5) * 0.3 + 0.7;
-  });
-
-  return (
-    <mesh ref={ref} position={[x, maxHeight / 2, 0]}>
-      <boxGeometry args={[0.3, maxHeight, 0.1]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={0.6}
-        transparent
-        opacity={0.5}
-      />
-    </mesh>
-  );
-}
-
+/* InstancedMesh for 12 floating boxes — 12 draw calls → 1 */
 function FloatingBoxes() {
   const boxes = useMemo(
     () =>
@@ -166,50 +146,34 @@ function FloatingBoxes() {
     [],
   );
 
-  return (
-    <>
-      {boxes.map((box, i) => (
-        <FloatingBox key={i} {...box} index={i} />
-      ))}
-    </>
-  );
-}
-
-function FloatingBox({
-  x,
-  y,
-  z,
-  scale,
-  speed,
-  index,
-}: {
-  x: number;
-  y: number;
-  z: number;
-  scale: number;
-  speed: number;
-  index: number;
-}) {
-  const ref = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
   const visible = useSceneVisible(2);
 
+  const boxMat2 = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#1a1a1a",
+    metalness: 0.7,
+    roughness: 0.3,
+    emissive: "#facc15",
+    emissiveIntensity: 0.15,
+  }), []);
+
   useFrame((state) => {
-    if (!visible || !ref.current) return;
+    if (!visible || !meshRef.current) return;
     const t = state.clock.elapsedTime;
-    ref.current.position.y = y + Math.sin(t * speed + index) * 0.3;
-    ref.current.rotation.y = t * speed * 0.3;
+    boxes.forEach((box, i) => {
+      sharedDummy.position.set(box.x, box.y + Math.sin(t * box.speed + i) * 0.3, box.z);
+      sharedDummy.rotation.set(0, t * box.speed * 0.3, 0);
+      sharedDummy.scale.setScalar(box.scale);
+      sharedDummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, sharedDummy.matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <mesh ref={ref} position={[x, y, z]} scale={scale}>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, boxes.length]}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial
-        color="#1a1a1a"
-        metalness={0.7}
-        roughness={0.3}
-        emissive="#facc15"
-        emissiveIntensity={0.15}
-      />
-    </mesh>
+      <primitive object={boxMat2} attach="material" />
+    </instancedMesh>
   );
 }

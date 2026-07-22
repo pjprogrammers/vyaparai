@@ -65,7 +65,7 @@ export function MarketingFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
+                      className="text-sm text-neutral-500 transition-colors hover:text-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
                     >
                       {link.label}
                     </Link>

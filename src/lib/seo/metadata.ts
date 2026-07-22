@@ -20,7 +20,7 @@ export function seoMetadata({
   description,
   path,
   keywords,
-  ogImage = "/og-image.png",
+  ogImage = "/og-image",
 }: SeoOptions): Metadata {
   const url = abs(path);
   return {

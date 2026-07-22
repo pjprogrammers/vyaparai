@@ -21,7 +21,7 @@ function Reveal({
       ref={ref}
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -62,14 +62,14 @@ export function HeroSection() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/auth"
-              className="group relative rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-yellow-500/20 transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-yellow-500/30"
+              className="group relative rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-8 py-3.5 text-sm font-semibold text-black shadow-lg shadow-yellow-500/20 transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-yellow-500/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Start Free
               <span className="absolute inset-0 rounded-xl bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
             </Link>
             <Link
               href="/features"
-              className="rounded-xl border border-white/10 px-8 py-3.5 text-sm font-semibold text-neutral-300 transition-all hover:border-white/20 hover:bg-white/5"
+              className="rounded-xl border border-white/10 px-8 py-3.5 text-sm font-semibold text-neutral-300 transition-all hover:border-white/20 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Explore Features
             </Link>
@@ -95,7 +95,7 @@ export function HeroSection() {
         </Reveal>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2" aria-hidden="true">
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -599,7 +599,7 @@ export function PricingSection() {
                 </ul>
                 <Link
                   href="/auth"
-                  className={`mt-6 block rounded-xl py-3 text-center text-sm font-semibold transition-all ${
+                  className={`mt-6 block rounded-xl py-3 text-center text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500 ${
                     plan.highlighted
                       ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black hover:from-yellow-300 hover:to-amber-400"
                       : "border border-white/10 text-neutral-300 hover:bg-white/5"
@@ -638,14 +638,14 @@ export function CTASection() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/auth"
-              className="group relative rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-10 py-4 text-sm font-semibold text-black shadow-lg shadow-yellow-500/20 transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-yellow-500/30"
+              className="group relative rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-10 py-4 text-sm font-semibold text-black shadow-lg shadow-yellow-500/20 transition-all hover:from-yellow-300 hover:to-amber-400 hover:shadow-yellow-500/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Start Free Now
               <span className="absolute inset-0 rounded-xl bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
             </Link>
             <Link
               href="/about"
-              className="rounded-xl border border-white/10 px-10 py-4 text-sm font-semibold text-neutral-300 transition-all hover:border-white/20 hover:bg-white/5"
+              className="rounded-xl border border-white/10 px-10 py-4 text-sm font-semibold text-neutral-300 transition-all hover:border-white/20 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             >
               Learn More
             </Link>

@@ -8,6 +8,7 @@ import { MarketingFooter } from "@/components/marketing/footer";
 import { SplashProvider } from "@/components/loading/splash-context";
 import { CinematicSplash } from "@/components/loading/cinematic-splash";
 import { RouteTransition } from "@/components/loading/route-transition";
+import { useResponsive } from "@/components/3d/responsive-context";
 
 const VyaparCanvas = dynamic(
   () =>
@@ -26,6 +27,8 @@ export default function MarketingLayout({
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setScrollProgress(v);
   });
+
+  useResponsive();
 
   return (
     <SplashProvider>

@@ -5,6 +5,8 @@ import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneVisible } from "../camera-rig";
+import { SharedGeo, SharedMat, sharedDummy } from "../scene-cache";
+import { responsiveStore } from "../responsive-context";
 
 export function AutomationScene() {
   return (
@@ -47,6 +49,10 @@ function AutomationPipeline() {
   );
 }
 
+const octaGeo = new THREE.OctahedronGeometry(0.35, 0);
+const nodeMat = new THREE.MeshStandardMaterial({ color: "#1a1a1a", metalness: 0.8, roughness: 0.2, emissive: "#facc15", emissiveIntensity: 0.4 });
+const glowMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 2, transparent: true, opacity: 0.15 });
+
 function PipelineNode({
   pos,
   index,
@@ -73,30 +79,13 @@ function PipelineNode({
 
   return (
     <group position={pos}>
-      <mesh ref={ref}>
-        <octahedronGeometry args={[0.35, 0]} />
-        <meshStandardMaterial
-          color="#1a1a1a"
-          metalness={0.8}
-          roughness={0.2}
-          emissive="#facc15"
-          emissiveIntensity={0.4}
-        />
-      </mesh>
-
-      <mesh ref={glowRef} scale={1.5}>
-        <octahedronGeometry args={[0.35, 0]} />
-        <meshStandardMaterial
-          color="#facc15"
-          emissive="#facc15"
-          emissiveIntensity={2}
-          transparent
-          opacity={0.15}
-        />
-      </mesh>
+      <mesh ref={ref} geometry={octaGeo} material={nodeMat} />
+      <mesh ref={glowRef} geometry={octaGeo} material={glowMat} scale={1.5} />
     </group>
   );
 }
+
+const lineMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 2, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
 
 function ConnectionLine({
   from,
@@ -139,16 +128,9 @@ function ConnectionLine({
       ref={ref}
       position={midPoint}
       rotation={[0, 0, angle]}
+      material={lineMat}
     >
       <planeGeometry args={[length, 0.02]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={2}
-        transparent
-        opacity={0.6}
-        side={THREE.DoubleSide}
-      />
     </mesh>
   );
 }
@@ -201,8 +183,12 @@ function FlowParticles() {
   );
 }
 
+/* InstancedMesh for 30 graph dots — 30 draw calls → 1 */
 function NodeGraph() {
-  const nodes = useMemo(() => {
+  const dotsRef = useRef<THREE.InstancedMesh>(null!);
+  const visible = useSceneVisible(5);
+
+  const dots = useMemo(() => {
     const result: { pos: [number, number, number]; speed: number }[] = [];
     for (let i = 0; i < 30; i++) {
       result.push({
@@ -217,44 +203,31 @@ function NodeGraph() {
     return result;
   }, []);
 
-  return (
-    <group>
-      {nodes.map((node, i) => (
-        <GraphDot key={i} position={node.pos} speed={node.speed} index={i} />
-      ))}
-    </group>
-  );
-}
-
-function GraphDot({
-  position,
-  speed,
-  index,
-}: {
-  position: [number, number, number];
-  speed: number;
-  index: number;
-}) {
-  const ref = useRef<THREE.Mesh>(null!);
-  const visible = useSceneVisible(5);
+  const dotMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#facc15",
+    emissive: "#facc15",
+    emissiveIntensity: 1.5,
+    transparent: true,
+    opacity: 0.4,
+  }), []);
 
   useFrame((state) => {
-    if (!visible || !ref.current) return;
-    const pulse = Math.sin(state.clock.elapsedTime * speed + index) * 0.3 + 0.7;
-    ref.current.scale.setScalar(pulse);
-    (ref.current.material as THREE.MeshStandardMaterial).opacity = pulse * 0.4;
+    if (!visible || !dotsRef.current) return;
+    const t = state.clock.elapsedTime;
+    for (let i = 0; i < dots.length; i++) {
+      const pulse = Math.sin(t * dots[i].speed + i) * 0.3 + 0.7;
+      sharedDummy.position.set(dots[i].pos[0], dots[i].pos[1], dots[i].pos[2]);
+      sharedDummy.scale.setScalar(pulse);
+      sharedDummy.updateMatrix();
+      dotsRef.current.setMatrixAt(i, sharedDummy.matrix);
+    }
+    dotsRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <mesh ref={ref} position={position}>
+    <instancedMesh ref={dotsRef} args={[undefined, undefined, dots.length]}>
       <sphereGeometry args={[0.03, 6, 6]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={1.5}
-        transparent
-        opacity={0.4}
-      />
-    </mesh>
+      <primitive object={dotMat} attach="material" />
+    </instancedMesh>
   );
 }

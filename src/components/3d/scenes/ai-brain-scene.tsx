@@ -5,6 +5,8 @@ import { useFrame } from "@react-three/fiber";
 import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { useSceneVisible } from "../camera-rig";
+import { sharedDummy } from "../scene-cache";
+import { getTransmissionSamples } from "../responsive-context";
 
 export function AIBrainScene() {
   return (
@@ -23,11 +25,19 @@ export function AIBrainScene() {
   );
 }
 
+const innerMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 3, transparent: true, opacity: 0.8, wireframe: true });
+const midMat = new THREE.MeshStandardMaterial({ color: "#f59e0b", emissive: "#f59e0b", emissiveIntensity: 1.5, transparent: true, opacity: 0.3, wireframe: true });
+const outerMat = new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 0.8, transparent: true, opacity: 0.15, wireframe: true });
+const innerGeo = new THREE.IcosahedronGeometry(0.6, 3);
+const midGeo = new THREE.DodecahedronGeometry(1.0, 0);
+const outerGeo = new THREE.IcosahedronGeometry(1.5, 1);
+
 function AICore() {
   const innerRef = useRef<THREE.Mesh>(null!);
   const midRef = useRef<THREE.Mesh>(null!);
   const outerRef = useRef<THREE.Mesh>(null!);
   const visible = useSceneVisible(4);
+  const samples = useMemo(() => getTransmissionSamples(), []);
 
   useFrame((state) => {
     if (!visible) return;
@@ -47,47 +57,15 @@ function AICore() {
 
   return (
     <group>
-      <mesh ref={innerRef}>
-        <icosahedronGeometry args={[0.6, 3]} />
-        <meshStandardMaterial
-          color="#facc15"
-          emissive="#facc15"
-          emissiveIntensity={3}
-          transparent
-          opacity={0.8}
-          wireframe
-        />
-      </mesh>
-
-      <mesh ref={midRef}>
-        <dodecahedronGeometry args={[1.0, 0]} />
-        <meshStandardMaterial
-          color="#f59e0b"
-          emissive="#f59e0b"
-          emissiveIntensity={1.5}
-          transparent
-          opacity={0.3}
-          wireframe
-        />
-      </mesh>
-
-      <mesh ref={outerRef}>
-        <icosahedronGeometry args={[1.5, 1]} />
-        <meshStandardMaterial
-          color="#facc15"
-          emissive="#facc15"
-          emissiveIntensity={0.8}
-          transparent
-          opacity={0.15}
-          wireframe
-        />
-      </mesh>
+      <mesh ref={innerRef} geometry={innerGeo} material={innerMat} />
+      <mesh ref={midRef} geometry={midGeo} material={midMat} />
+      <mesh ref={outerRef} geometry={outerGeo} material={outerMat} />
 
       <mesh>
         <sphereGeometry args={[0.4, 32, 32]} />
         <MeshTransmissionMaterial
           backside
-          samples={4}
+          samples={samples}
           thickness={0.3}
           chromaticAberration={0.2}
           anisotropy={0.3}
@@ -111,6 +89,7 @@ function AICore() {
   );
 }
 
+/* InstancedMesh for 24 neural nodes — 24 draw calls → 1 */
 function NeuralNetwork() {
   const nodes = useMemo(() => {
     const result: { pos: [number, number, number]; connections: number[] }[] = [];
@@ -147,41 +126,48 @@ function NeuralNetwork() {
 
   return (
     <group>
-      {nodes.map((node, i) => (
-        <NeuralNode key={i} position={node.pos} index={i} />
-      ))}
-
+      <NeuralNodesInstanced nodes={nodes} />
       <NeuralConnections nodes={nodes} />
     </group>
   );
 }
 
-function NeuralNode({
-  position,
-  index,
+function NeuralNodesInstanced({
+  nodes,
 }: {
-  position: [number, number, number];
-  index: number;
+  nodes: { pos: [number, number, number]; connections: number[] }[];
 }) {
-  const ref = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
   const visible = useSceneVisible(4);
 
+  const nodeMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#facc15",
+    emissive: "#facc15",
+    emissiveIntensity: 2,
+  }), []);
+
   useFrame((state) => {
-    if (!visible || !ref.current) return;
-    ref.current.scale.setScalar(Math.sin(state.clock.elapsedTime * 2 + index * 0.5) * 0.3 + 0.7);
+    if (!visible || !meshRef.current) return;
+    const t = state.clock.elapsedTime;
+    for (let i = 0; i < nodes.length; i++) {
+      const s = Math.sin(t * 2 + i * 0.5) * 0.3 + 0.7;
+      sharedDummy.position.set(nodes[i].pos[0], nodes[i].pos[1], nodes[i].pos[2]);
+      sharedDummy.scale.setScalar(s);
+      sharedDummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, sharedDummy.matrix);
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <mesh ref={ref} position={position}>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, nodes.length]}>
       <sphereGeometry args={[0.04, 8, 8]} />
-      <meshStandardMaterial
-        color="#facc15"
-        emissive="#facc15"
-        emissiveIntensity={2}
-      />
-    </mesh>
+      <primitive object={nodeMat} attach="material" />
+    </instancedMesh>
   );
 }
+
+const connMat = new THREE.LineBasicMaterial({ color: "#facc15", transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false });
 
 function NeuralConnections({
   nodes,
@@ -210,15 +196,7 @@ function NeuralConnections({
   }, [nodes]);
 
   return (
-    <lineSegments geometry={geometry}>
-      <lineBasicMaterial
-        color="#facc15"
-        transparent
-        opacity={0.15}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </lineSegments>
+    <lineSegments geometry={geometry} material={connMat} />
   );
 }
 
