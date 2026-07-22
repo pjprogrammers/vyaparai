@@ -1,38 +1,72 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { motion, useInView } from "motion/react";
 import dynamic from "next/dynamic";
 import { GridBackground, GradientOrb, FloatingDots } from "./backgrounds";
-import type { MarketingSceneTheme } from "./marketing-scene";
 
 const MarketingScene3D = dynamic(
-  () => import("./marketing-scene").then((m) => m.MarketingScene3D),
-  { ssr: false }
+  () => import("./scenes/hero-scene").then((m) => m.HeroScene),
+  { ssr: false },
 );
 
-export function MarketingPageWrapper({
+function Reveal({
   children,
-  scene = "default",
+  delay = 0,
+  className = "",
 }: {
   children: ReactNode;
-  scene?: MarketingSceneTheme;
+  delay?: number;
+  className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+
   return (
-    <main className="relative min-h-screen bg-slate-950 text-white">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function MarketingPageWrapper({ children, scene: _scene }: { children: ReactNode; scene?: string }) {
+  return (
+    <div className="relative min-h-screen bg-[#0a0a0a]">
+      <div className="noise-overlay" />
       <GridBackground />
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <MarketingScene3D theme={scene} />
-      </div>
-      <GradientOrb className="top-0 -right-40 w-[500px] h-[500px]" color="#6366f1" />
-      <GradientOrb className="bottom-0 -left-40 w-[400px] h-[400px]" color="#818cf8" delay={2} />
-      <FloatingDots count={20} />
+      <GradientOrb className="w-[600px] h-[600px] -top-40 -left-40" color="#facc15" />
+      <GradientOrb className="w-[500px] h-[500px] -bottom-20 -right-20" color="#f59e0b" delay={2} />
+      <FloatingDots count={30} />
       <div className="relative z-10">{children}</div>
-    </main>
+    </div>
   );
 }
 
 export function AnimatedH1({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Reveal>
+      <h1
+        className={`text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl ${className}`}
+      >
+        {children}
+      </h1>
+    </Reveal>
+  );
+}
+
+export function AnimatedP({
   children,
   className = "",
   delay = 0,
@@ -41,44 +75,12 @@ export function AnimatedH1({
   className?: string;
   delay?: number;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
   return (
-    <motion.h1
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={`text-4xl font-bold tracking-tight text-white sm:text-5xl ${className}`}
-    >
-      {children}
-    </motion.h1>
-  );
-}
-
-export function AnimatedP({
-  children,
-  className = "",
-  delay = 0.1,
-}: {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
-  return (
-    <motion.p
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={`text-lg text-slate-400 ${className}`}
-    >
-      {children}
-    </motion.p>
+    <Reveal delay={delay}>
+      <p className={`text-lg text-neutral-400 leading-relaxed ${className}`}>
+        {children}
+      </p>
+    </Reveal>
   );
 }
 
@@ -91,20 +93,15 @@ export function AnimatedCard({
   className?: string;
   delay?: number;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className={`rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm transition-colors hover:border-indigo-500/30 hover:bg-slate-800/50 ${className}`}
-    >
-      {children}
-    </motion.div>
+    <Reveal delay={delay}>
+      <motion.div
+        whileHover={{ y: -4 }}
+        className={`glass-dark-elevated rounded-2xl p-6 ${className}`}
+      >
+        {children}
+      </motion.div>
+    </Reveal>
   );
 }
 
@@ -117,78 +114,33 @@ export function AnimatedArticle({
   className?: string;
   delay?: number;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
   return (
-    <motion.article
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={className}
-    >
-      {children}
-    </motion.article>
+    <Reveal delay={delay}>
+      <article className={className}>{children}</article>
+    </Reveal>
   );
 }
 
 export function StaggerList({
   children,
   className = "",
-  staggerDelay = 0.08,
 }: {
   children: ReactNode;
   className?: string;
-  staggerDelay?: number;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: staggerDelay,
-          },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div className={`grid gap-6 ${className}`}>{children}</div>
   );
 }
 
 export function StaggerListItem({
   children,
-  className = "",
+  index = 0,
 }: {
   children: ReactNode;
-  className?: string;
+  index?: number;
 }) {
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
-        visible: {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          transition: {
-            duration: 0.6,
-            ease: [0.21, 0.47, 0.32, 0.98],
-          },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <Reveal delay={index * 0.06}>{children}</Reveal>
   );
 }
