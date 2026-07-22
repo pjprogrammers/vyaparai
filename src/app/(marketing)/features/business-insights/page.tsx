@@ -37,8 +37,8 @@ export default function Page() {
           </AnimatedArticle>
         </div>
         <div className="mt-10 flex gap-4">
-          <Link href="/features" className="font-semibold text-indigo-400 hover:underline">← All features</Link>
-          <Link href="/blog" className="font-semibold text-indigo-400 hover:underline">Read the blog →</Link>
+          <Link href="/features" className="font-semibold text-yellow-400 hover:underline">← All features</Link>
+          <Link href="/blog" className="font-semibold text-yellow-400 hover:underline">Read the blog →</Link>
         </div>
       </section>
       <FaqSection items={faqs} />

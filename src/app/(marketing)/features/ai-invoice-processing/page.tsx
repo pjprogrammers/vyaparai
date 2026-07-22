@@ -39,8 +39,8 @@ export default function Page() {
           </AnimatedArticle>
         </div>
         <div className="mt-10 flex gap-4">
-          <Link href="/features/inventory-ai" className="font-semibold text-indigo-400 hover:underline">Next: Inventory AI →</Link>
-          <Link href="/auth" className="font-semibold text-indigo-400 hover:underline">Try VyaparAI →</Link>
+          <Link href="/features/inventory-ai" className="font-semibold text-yellow-400 hover:underline">Next: Inventory AI →</Link>
+          <Link href="/auth" className="font-semibold text-yellow-400 hover:underline">Try VyaparAI →</Link>
         </div>
       </section>
       <FaqSection items={faqs} />

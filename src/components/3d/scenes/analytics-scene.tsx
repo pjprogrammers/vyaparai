@@ -36,7 +36,7 @@ function DashboardPanel() {
   const visible = useSceneVisible(3);
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     ref.current.rotation.y = Math.sin(t * 0.2) * 0.08;
     ref.current.rotation.x = Math.sin(t * 0.15) * 0.03;
   });
@@ -62,7 +62,7 @@ function BarChart3D() {
   const barMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 0.6, transparent: true, opacity: 0.5 }), []);
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     bars.forEach((bar, i) => {
       const s = 0.3 + ((Math.sin(t * bar.speed + i * 0.4) + 1) / 2) * 0.7;
       sharedDummy.position.set(bar.x, bar.maxHeight / 2, 0);
@@ -92,7 +92,7 @@ function PieChart3D() {
   })), []);
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    ref.current.rotation.z = state.clock.elapsedTime * 0.2;
+    ref.current.rotation.z = state.clock.getElapsedTime() * 0.2;
   });
   return (
     <group ref={ref} position={[-2, -1.2, 0.8]} rotation={[0.4, 0.2, 0]}>
@@ -112,7 +112,7 @@ function LineChart3D() {
   const dotMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#facc15", emissive: "#facc15", emissiveIntensity: 1.5, transparent: true, opacity: 0.7 }), []);
   useFrame((state) => {
     if (!visible || !dotsRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     for (let i = 0; i < 20; i++) {
       const x = (i / 19) * 3 - 1.5;
       const y = Math.sin(t * 0.5 + i * 0.5) * 0.4 + Math.cos(t * 0.3 + i * 0.3) * 0.2;

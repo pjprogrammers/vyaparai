@@ -29,10 +29,10 @@ export default function Page() {
           </AnimatedArticle>
           <AnimatedArticle delay={0.3}>
             <h2 className="text-2xl font-semibold text-white">Automate the updates</h2>
-            <p className="mt-2">Connect purchases and sales to stock so it is always accurate. See how <Link href="/features/inventory-ai" className="text-indigo-400 hover:underline">Inventory AI</Link> does this for Indian businesses.</p>
+            <p className="mt-2">Connect purchases and sales to stock so it is always accurate. See how <Link href="/features/inventory-ai" className="text-yellow-400 hover:underline">Inventory AI</Link> does this for Indian businesses.</p>
           </AnimatedArticle>
         </div>
-        <div className="mt-10"><Link href="/blog" className="font-semibold text-indigo-400 hover:underline">← Back to blog</Link></div>
+        <div className="mt-10"><Link href="/blog" className="font-semibold text-yellow-400 hover:underline">← Back to blog</Link></div>
       </article>
     </MarketingPageWrapper>
   );

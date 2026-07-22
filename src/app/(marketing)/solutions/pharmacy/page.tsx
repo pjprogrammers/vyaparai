@@ -30,8 +30,8 @@ export default function Page() {
           </AnimatedArticle>
         </div>
         <div className="mt-10 flex gap-4">
-          <Link href="/features/ai-invoice-processing" className="font-semibold text-indigo-400 hover:underline">Invoice AI →</Link>
-          <Link href="/auth" className="font-semibold text-indigo-400 hover:underline">Start Free →</Link>
+          <Link href="/features/ai-invoice-processing" className="font-semibold text-yellow-400 hover:underline">Invoice AI →</Link>
+          <Link href="/auth" className="font-semibold text-yellow-400 hover:underline">Start Free →</Link>
         </div>
       </section>
     </MarketingPageWrapper>

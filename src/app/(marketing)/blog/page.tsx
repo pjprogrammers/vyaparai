@@ -28,7 +28,7 @@ export default function Page() {
           {posts.map((p) => (
             <StaggerListItem key={p.href}>
               <Link href={p.href}>
-                <AnimatedCard className="hover:border-indigo-500/30">
+                <AnimatedCard className="hover:border-yellow-500/30">
                   <p className="text-xs text-slate-500">{p.date}</p>
                   <h2 className="mt-1 text-xl font-semibold text-white">{p.t}</h2>
                   <p className="mt-2 text-sm text-slate-400">{p.d}</p>

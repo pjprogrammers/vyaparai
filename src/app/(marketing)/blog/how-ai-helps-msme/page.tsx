@@ -33,10 +33,10 @@ export default function Page() {
           </AnimatedArticle>
           <AnimatedArticle delay={0.4}>
             <h2 className="text-2xl font-semibold text-white">What to automate first</h2>
-            <p className="mt-2">Start with <Link href="/features/ai-invoice-processing" className="text-indigo-400 hover:underline">invoice processing</Link> and <Link href="/features/inventory-ai" className="text-indigo-400 hover:underline">inventory AI</Link>, then layer in <Link href="/features/business-insights" className="text-indigo-400 hover:underline">insights</Link>.</p>
+            <p className="mt-2">Start with <Link href="/features/ai-invoice-processing" className="text-yellow-400 hover:underline">invoice processing</Link> and <Link href="/features/inventory-ai" className="text-yellow-400 hover:underline">inventory AI</Link>, then layer in <Link href="/features/business-insights" className="text-yellow-400 hover:underline">insights</Link>.</p>
           </AnimatedArticle>
         </div>
-        <div className="mt-10"><Link href="/blog" className="font-semibold text-indigo-400 hover:underline">← Back to blog</Link></div>
+        <div className="mt-10"><Link href="/blog" className="font-semibold text-yellow-400 hover:underline">← Back to blog</Link></div>
       </article>
     </MarketingPageWrapper>
   );

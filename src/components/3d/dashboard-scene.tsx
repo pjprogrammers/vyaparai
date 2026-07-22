@@ -1,13 +1,18 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 
 export function DashboardScene3D() {
   return (
-    <>
+    <Canvas
+      camera={{ position: [0, 0, 8], fov: 45 }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, alpha: true }}
+      style={{ background: "transparent" }}
+    >
       <ambientLight intensity={0.15} />
       <directionalLight position={[5, 5, 5]} intensity={0.5} color="#facc15" />
       <pointLight position={[0, 3, 4]} intensity={1.5} color="#facc15" distance={12} />
@@ -17,7 +22,7 @@ export function DashboardScene3D() {
       <Particles count={150} />
       <MouseParallax />
       <Environment preset="night" />
-    </>
+    </Canvas>
   );
 }
 
@@ -42,7 +47,7 @@ function FloatingCubes() {
 function FloatingCube({ position, speed }: { position: [number, number, number]; speed: number }) {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     if (ref.current) {
       ref.current.rotation.x = t * speed;
       ref.current.rotation.y = t * speed * 0.5;
@@ -69,7 +74,7 @@ function WireframeSpheres() {
 function WireframeSphere({ position, speed }: { position: [number, number, number]; speed: number }) {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame((state) => {
-    if (ref.current) ref.current.rotation.y = state.clock.elapsedTime * speed;
+    if (ref.current) ref.current.rotation.y = state.clock.getElapsedTime() * speed;
   });
   return (
     <mesh ref={ref} position={position}>
@@ -110,7 +115,7 @@ function Particles({ count }: { count: number }) {
     return geo;
   }, [count]);
   useFrame((state) => {
-    if (ref.current) ref.current.rotation.y = state.clock.elapsedTime * 0.02;
+    if (ref.current) ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
   });
   return (
     <points ref={ref} geometry={geometry}>

@@ -67,7 +67,7 @@ function PipelineNode({
 
   useFrame((state) => {
     if (!visible) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     if (ref.current) {
       ref.current.scale.setScalar(Math.sin(t * 2 + index * 0.8) * 0.15 + 1);
     }
@@ -120,7 +120,7 @@ function ConnectionLine({
   useFrame((state) => {
     if (!visible || !ref.current) return;
     (ref.current.material as THREE.MeshStandardMaterial).opacity =
-      (Math.sin(state.clock.elapsedTime * 3 + index * 1.2) * 0.3 + 0.7) * 0.6;
+      (Math.sin(state.clock.getElapsedTime() * 3 + index * 1.2) * 0.3 + 0.7) * 0.6;
   });
 
   return (
@@ -213,7 +213,7 @@ function NodeGraph() {
 
   useFrame((state) => {
     if (!visible || !dotsRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     for (let i = 0; i < dots.length; i++) {
       const pulse = Math.sin(t * dots[i].speed + i) * 0.3 + 0.7;
       sharedDummy.position.set(dots[i].pos[0], dots[i].pos[1], dots[i].pos[2]);

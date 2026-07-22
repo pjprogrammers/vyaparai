@@ -92,7 +92,7 @@ function LogoFormation() {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
+    ref.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
   });
 
   return (
@@ -150,7 +150,7 @@ function EnergyRing({ radius, speed, rotationSpeed, index }: {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     ref.current.rotation.x = Math.sin(t * rotationSpeed + index) * 0.5;
     ref.current.rotation.y = t * speed;
   });

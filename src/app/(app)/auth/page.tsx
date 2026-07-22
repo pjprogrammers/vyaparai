@@ -49,8 +49,8 @@ export default function AuthPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-950">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+          <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
         </main>
       }
     >
@@ -166,20 +166,20 @@ function AuthPageInner() {
 
   if (signupSuccess) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-slate-950 px-6 overflow-hidden">
+      <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
         <AuthScene />
         <GridBackground />
-        <GradientOrb className="w-[400px] h-[400px] top-1/4 left-1/4" color="#6366f1" />
+        <GradientOrb className="w-[400px] h-[400px] top-1/4 left-1/4" color="#facc15" />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-slate-700/50 bg-slate-800/80 backdrop-blur-xl p-8 text-center">
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20">
               <Mail className="h-8 w-8 text-emerald-400" />
             </div>
             <h2 className="text-xl font-bold text-white">Check your email</h2>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-neutral-400">
               We sent a verification link to <strong className="text-white">{email}</strong>. Click the link to verify your account.
             </p>
-            <button onClick={() => { setSignupSuccess(false); setMode("login"); }} className="mt-6 w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+            <button onClick={() => { setSignupSuccess(false); setMode("login"); }} className="mt-6 w-full rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:from-yellow-300 hover:to-amber-400">
               Back to Sign In
             </button>
           </div>
@@ -190,21 +190,21 @@ function AuthPageInner() {
 
   if (setupOpen) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-slate-950 px-6 overflow-hidden">
+      <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
         <AuthScene />
         <GridBackground />
-        <GradientOrb className="w-[400px] h-[400px] bottom-1/4 right-1/4" color="#818cf8" />
+        <GradientOrb className="w-[400px] h-[400px] bottom-1/4 right-1/4" color="#f59e0b" />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-slate-700/50 bg-slate-800/80 backdrop-blur-xl p-8">
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8">
             <h2 className="text-lg font-bold text-white mb-4">Business Setup</h2>
             <div className="space-y-3">
-              <input placeholder="Business Name" value={biz.name} onChange={(e) => setBiz({ ...biz, name: e.target.value })} className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
-              <select value={biz.category} onChange={(e) => setBiz({ ...biz, category: e.target.value as BusinessCategory })} className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500">
+              <input placeholder="Business Name" value={biz.name} onChange={(e) => setBiz({ ...biz, name: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
+              <select value={biz.category} onChange={(e) => setBiz({ ...biz, category: e.target.value as BusinessCategory })} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500">
                 {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
               </select>
-              <input placeholder="GST Number (optional)" value={biz.gst} onChange={(e) => setBiz({ ...biz, gst: e.target.value })} className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
-              <input placeholder="Address" value={biz.address} onChange={(e) => setBiz({ ...biz, address: e.target.value })} className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
-              <button onClick={completeSetup} disabled={!biz.name} className="w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-50">
+              <input placeholder="GST Number (optional)" value={biz.gst} onChange={(e) => setBiz({ ...biz, gst: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
+              <input placeholder="Address" value={biz.address} onChange={(e) => setBiz({ ...biz, address: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
+              <button onClick={completeSetup} disabled={!biz.name} className="w-full rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:from-yellow-300 hover:to-amber-400 disabled:opacity-50">
                 Finish & Enter Dashboard
               </button>
             </div>
@@ -215,11 +215,11 @@ function AuthPageInner() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-slate-950 px-6 overflow-hidden">
+    <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
       <AuthScene className="opacity-50" />
       <GridBackground />
-      <GradientOrb className="w-[500px] h-[500px] -top-20 -left-20" color="#6366f1" />
-      <GradientOrb className="w-[400px] h-[400px] -bottom-20 -right-20" color="#818cf8" delay={2} />
+      <GradientOrb className="w-[500px] h-[500px] -top-20 -left-20" color="#facc15" />
+      <GradientOrb className="w-[400px] h-[400px] -bottom-20 -right-20" color="#f59e0b" delay={2} />
       <FloatingDots count={25} />
 
       <motion.div
@@ -228,20 +228,20 @@ function AuthPageInner() {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-800/80 backdrop-blur-xl p-8">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8">
           <div className="text-center mb-6">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-              className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/20"
+              className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20"
             >
-              <ShieldCheck className="h-6 w-6 text-indigo-400" />
+              <ShieldCheck className="h-6 w-6 text-yellow-400" />
             </motion.div>
             <h1 className="text-2xl font-bold text-white">
               {mode === "login" ? "Welcome back" : "Create your account"}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-neutral-400">
               {mode === "login" ? "Sign in to manage your business" : "Start automating your business with AI"}
             </p>
           </div>
@@ -258,46 +258,46 @@ function AuthPageInner() {
             </motion.div>
           )}
 
-          <div className="mb-5 flex rounded-xl bg-slate-700/50 p-1">
-            <button onClick={() => { setMode("login"); setError(""); setResetSent(false); }} className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${mode === "login" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-400 hover:text-slate-300"}`}>
+          <div className="mb-5 flex rounded-xl bg-white/5 p-1">
+            <button onClick={() => { setMode("login"); setError(""); setResetSent(false); }} className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${mode === "login" ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-sm" : "text-neutral-400 hover:text-neutral-300"}`}>
               Sign In
             </button>
-            <button onClick={() => { setMode("signup"); setError(""); setResetSent(false); }} className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${mode === "signup" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-400 hover:text-slate-300"}`}>
+            <button onClick={() => { setMode("signup"); setError(""); setResetSent(false); }} className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${mode === "signup" ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black shadow-sm" : "text-neutral-400 hover:text-neutral-300"}`}>
               Sign Up
             </button>
           </div>
 
           <div className="space-y-2">
-            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={handleGoogle} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-700 disabled:opacity-50">
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={handleGoogle} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition hover:bg-white/10 disabled:opacity-50">
               <GoogleIcon className="h-5 w-5" />
               Continue with Google
             </motion.button>
-            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={handleGitHub} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-700 disabled:opacity-50">
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={handleGitHub} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition hover:bg-white/10 disabled:opacity-50">
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               Continue with GitHub
             </motion.button>
           </div>
 
-          <div className="my-5 flex items-center gap-3 text-xs text-slate-500">
-            <div className="h-px flex-1 bg-slate-700" />
+          <div className="my-5 flex items-center gap-3 text-xs text-neutral-500">
+            <div className="h-px flex-1 bg-white/10" />
             <span>OR</span>
-            <div className="h-px flex-1 bg-slate-700" />
+            <div className="h-px flex-1 bg-white/10" />
           </div>
 
           <form onSubmit={mode === "login" ? handleEmailLogin : handleEmailSignup} className="space-y-3">
             <AnimatePresence mode="wait">
               {mode === "signup" && (
                 <motion.div key="name" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                  <input type="text" placeholder="Full Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required autoComplete="name" className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
+                  <input type="text" placeholder="Full Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required autoComplete="name" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
 
             <div className="relative">
-              <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={mode === "login" ? "current-password" : "new-password"} className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 pr-10 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300" aria-label={showPassword ? "Hide password" : "Show password"}>
+              <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={mode === "login" ? "current-password" : "new-password"} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-300" aria-label={showPassword ? "Hide password" : "Show password"}>
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
@@ -306,8 +306,8 @@ function AuthPageInner() {
               {mode === "signup" && (
                 <motion.div key="confirm" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
                   <div className="relative">
-                    <input type={showConfirm ? "text" : "password"} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" className="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-2.5 pr-10 text-sm text-white outline-none focus:border-indigo-500 placeholder:text-slate-500" />
-                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300">
+                    <input type={showConfirm ? "text" : "password"} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white outline-none focus:border-yellow-500 placeholder:text-neutral-500" />
+                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-300">
                       {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
@@ -317,22 +317,22 @@ function AuthPageInner() {
 
             {mode === "login" && (
               <div className="text-right">
-                <button type="button" onClick={handleForgotPassword} disabled={loading} className="text-xs font-medium text-indigo-400 hover:text-indigo-300">
+                <button type="button" onClick={handleForgotPassword} disabled={loading} className="text-xs font-medium text-yellow-400 hover:text-yellow-300">
                   Forgot password?
                 </button>
               </div>
             )}
 
-            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50">
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:from-yellow-300 hover:to-amber-400 disabled:opacity-50">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                 <>{mode === "login" ? "Sign In" : "Create Account"}<ArrowRight className="h-4 w-4" /></>
               )}
             </motion.button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-slate-400">
+          <p className="mt-5 text-center text-sm text-neutral-400">
             {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
-            <button onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); setResetSent(false); }} className="font-medium text-indigo-400 hover:text-indigo-300">
+            <button onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); setResetSent(false); }} className="font-medium text-yellow-400 hover:text-yellow-300">
               {mode === "login" ? "Sign up" : "Sign in"}
             </button>
           </p>

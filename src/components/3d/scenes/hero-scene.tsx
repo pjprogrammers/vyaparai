@@ -43,7 +43,7 @@ function NeuralCore() {
 
   useFrame((state) => {
     if (!visible) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     const amp = responsiveStore.preset.amplitude;
     if (groupRef.current) {
       groupRef.current.rotation.y = t * 0.15;
@@ -108,7 +108,7 @@ function FloatingRing({ radius, speed, rotationSpeed, color, index }: {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     const amp = responsiveStore.preset.amplitude;
     ref.current.rotation.x = Math.sin(t * rotationSpeed + index) * 0.5 * amp;
     ref.current.rotation.y = t * speed;

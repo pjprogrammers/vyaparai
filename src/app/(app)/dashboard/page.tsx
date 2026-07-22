@@ -85,12 +85,12 @@ export default function DashboardPage() {
   }, [businessId, loading, user, getIdToken]);
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-slate-950 p-10 text-center text-slate-400">Loading…</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-10 text-center text-slate-400">Loading…</div>;
   }
 
   if (needsEmailVerification(user)) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6">
+      <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6">
         <Card className="w-full max-w-md">
           <CardContent className="space-y-4 p-8 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/20">
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                   await sendEmailVerification(user);
                 }
               }}
-              className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+              className="w-full rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:from-yellow-300 hover:to-amber-400"
             >
               Resend Verification Email
             </button>
@@ -126,11 +126,11 @@ export default function DashboardPage() {
   const bizName = data?.business?.name ?? "Your Business";
 
   return (
-    <main className="relative min-h-screen bg-slate-950 p-6 overflow-hidden">
+    <main className="relative min-h-screen bg-[#0a0a0a] p-6 overflow-hidden">
       <DashboardScene />
       <GridBackground />
-      <GradientOrb className="w-[500px] h-[500px] -top-40 -right-40" color="#6366f1" />
-      <GradientOrb className="w-[400px] h-[400px] -bottom-20 -left-20" color="#818cf8" delay={2} />
+      <GradientOrb className="w-[500px] h-[500px] -top-40 -right-40" color="#facc15" />
+      <GradientOrb className="w-[400px] h-[400px] -bottom-20 -left-20" color="#f59e0b" delay={2} />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
@@ -150,7 +150,7 @@ export default function DashboardPage() {
             {data && data.unreadNotifications > 0 && (
               <Badge className="bg-red-500/20 text-red-400 border-red-500/30">{data.unreadNotifications} new</Badge>
             )}
-            <span className="rounded-full bg-indigo-500/20 border border-indigo-500/30 px-3 py-1 text-xs font-medium text-indigo-400">
+            <span className="rounded-full bg-yellow-500/20 border border-yellow-500/30 px-3 py-1 text-xs font-medium text-yellow-400">
               {bizName}
             </span>
           </div>

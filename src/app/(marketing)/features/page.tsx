@@ -33,10 +33,10 @@ export default function FeaturesPage() {
           {features.map((f, i) => (
             <StaggerListItem key={f.href}>
               <Link href={f.href}>
-                <AnimatedCard delay={i * 0.1} className="h-full hover:border-indigo-500/30">
+                <AnimatedCard delay={i * 0.1} className="h-full hover:border-yellow-500/30">
                   <h2 className="text-xl font-semibold text-white">{f.t}</h2>
                   <p className="mt-2 text-sm text-slate-400">{f.d}</p>
-                  <p className="mt-3 text-xs text-indigo-400">{f.kw}</p>
+                  <p className="mt-3 text-xs text-yellow-400">{f.kw}</p>
                 </AnimatedCard>
               </Link>
             </StaggerListItem>

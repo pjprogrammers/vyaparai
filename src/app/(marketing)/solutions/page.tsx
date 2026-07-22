@@ -29,7 +29,7 @@ export default function Page() {
           {solutions.map((s, i) => (
             <StaggerListItem key={s.href}>
               <Link href={s.href}>
-                <AnimatedCard delay={i * 0.1} className="h-full hover:border-indigo-500/30">
+                <AnimatedCard delay={i * 0.1} className="h-full hover:border-yellow-500/30">
                   <h2 className="text-xl font-semibold text-white">{s.t}</h2>
                   <p className="mt-2 text-sm text-slate-400">{s.d}</p>
                 </AnimatedCard>

@@ -89,14 +89,14 @@ export default function SettingsPage() {
   if (!business) return <div className="p-10 text-center text-slate-500">No business found. Complete setup first.</div>;
 
   return (
-    <main className="relative min-h-screen bg-slate-950 text-white">
+    <main className="relative min-h-screen bg-[#0a0a0a] text-white">
       <GridBackground />
-      <GradientOrb className="top-20 -right-32 w-96 h-96" color="#6366f1" />
+      <GradientOrb className="top-20 -right-32 w-96 h-96" color="#facc15" />
       <div className="pointer-events-none fixed inset-0 z-0"><DashboardScene3D /></div>
 
       <div className="relative z-10 mx-auto max-w-2xl space-y-6 p-6">
         <header className="flex items-center gap-3">
-          <Settings className="h-6 w-6 text-indigo-400" />
+          <Settings className="h-6 w-6 text-yellow-400" />
           <h1 className="text-2xl font-bold text-white">Business Settings</h1>
         </header>
 
@@ -111,7 +111,7 @@ export default function SettingsPage() {
               </div>
             )}
             <div>
-              <label className="cursor-pointer rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500">
+              <label className="cursor-pointer rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 text-sm font-semibold text-black transition hover:from-yellow-300 hover:to-amber-400">
                 <Upload className="mr-1 inline h-4 w-4" />
                 {uploading ? "Uploading…" : "Upload Logo"}
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
@@ -176,7 +176,7 @@ export default function SettingsPage() {
         </Card>
 
         <div className="flex items-center gap-3">
-          <Button onClick={handleSave} disabled={saving} className="bg-indigo-600 hover:bg-indigo-500">
+          <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-yellow-400 to-amber-500 text-black hover:from-yellow-300 hover:to-amber-400">
             <Save className="mr-1 h-4 w-4" />
             {saving ? "Saving…" : "Save Settings"}
           </Button>

@@ -16,7 +16,7 @@ export default function Page() {
     <MarketingPageWrapper scene="about">
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "About", path: "/about" }])} />
       <section className="mx-auto max-w-4xl px-6 py-16 text-center">
-        <p className="mb-3 inline-block rounded-full bg-indigo-500/20 border border-indigo-400/30 px-4 py-1 text-sm font-medium text-indigo-400">Our Story</p>
+        <p className="mb-3 inline-block rounded-full bg-yellow-500/20 border border-yellow-400/30 px-4 py-1 text-sm font-medium text-yellow-400">Our Story</p>
         <AnimatedH1>We Believe Every Indian Business Deserves an AI Employee</AnimatedH1>
         <AnimatedP delay={0.1} className="mx-auto mt-6 max-w-2xl">
           VyaparAI is an AI-powered business automation platform that helps Indian MSMEs manage invoices, inventory, customers and insights.
@@ -61,7 +61,7 @@ export default function Page() {
           ].map((s, i) => (
             <AnimatedArticle key={s.step} delay={i * 0.1}>
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/20 text-lg font-bold text-indigo-400">{s.step}</div>
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-500/20 text-lg font-bold text-yellow-400">{s.step}</div>
                 <h3 className="text-lg font-semibold text-white">{s.title}</h3>
                 <p className="mt-2 text-sm text-slate-400">{s.desc}</p>
               </div>

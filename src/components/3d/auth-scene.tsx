@@ -1,26 +1,31 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 
 export function AuthScene3D({ className = "" }: { className?: string }) {
   return (
     <div className={className}>
-      <ambientLight intensity={0.15} />
-      <directionalLight position={[5, 5, 5]} intensity={0.6} color="#facc15" />
-      <pointLight position={[-3, 2, 4]} intensity={1.5} color="#facc15" distance={15} />
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 45 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: "transparent" }}
+      >
+        <ambientLight intensity={0.15} />
+        <directionalLight position={[5, 5, 5]} intensity={0.6} color="#facc15" />
+        <pointLight position={[-3, 2, 4]} intensity={1.5} color="#facc15" distance={15} />
 
-      <FloatWrapper>
-        <WireframeShape />
-      </FloatWrapper>
+        <FloatWrapper>
+          <WireframeShape />
+        </FloatWrapper>
 
-      <FloatingParticles count={120} />
-      <MouseParallax />
-      <Environment preset="night" />
-
-      <EffectComposer />
+        <FloatingParticles count={120} />
+        <MouseParallax />
+        <Environment preset="night" />
+      </Canvas>
     </div>
   );
 }
@@ -29,7 +34,7 @@ function FloatWrapper({ children }: { children: React.ReactNode }) {
   const ref = useRef<THREE.Group>(null!);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     if (ref.current) {
       ref.current.rotation.y = t * 0.15;
       ref.current.position.y = Math.sin(t * 0.5) * 0.3;
@@ -84,7 +89,7 @@ function FloatingParticles({ count }: { count: number }) {
 
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.02;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
     }
   });
 
@@ -119,6 +124,4 @@ function MouseParallax() {
   return null;
 }
 
-function EffectComposer() {
-  return null;
-}
+

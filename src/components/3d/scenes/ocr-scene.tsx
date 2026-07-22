@@ -40,7 +40,7 @@ function InvoiceDocument() {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     ref.current.rotation.y = Math.sin(t * 0.3) * 0.1;
     ref.current.rotation.x = Math.sin(t * 0.2) * 0.05;
   });
@@ -78,7 +78,7 @@ function LaserScanner() {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    ref.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 1.5;
+    ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 1.5) * 1.5;
   });
 
   return (
@@ -123,7 +123,7 @@ function FloatingCharsInstanced({
 
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
 
     chars.forEach((c, i) => {
       sharedDummy.position.set(
@@ -187,7 +187,7 @@ function OutputBarsInstanced({
 
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
 
     bars.forEach((bar, i) => {
       const scaleY = Math.min(1, Math.max(0, (t - bar.delay) * 2));

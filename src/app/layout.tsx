@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { siteConfig } from "@/lib/seo/config";
 import { GlobalSchema } from "@/components/seo/json-ld";
@@ -85,8 +86,16 @@ export default function RootLayout({
     <html
       lang="en"
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
+        <Script
+          id="suppress-three-warnings"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var w=console.warn;console.warn=function(){if(arguments[0]&&typeof arguments[0]==='string'&&arguments[0].indexOf('THREE.Clock')!==-1)return;w.apply(console,arguments)}})()`,
+          }}
+        />
         {children}
         <GlobalSchema />
       </body>

@@ -41,7 +41,7 @@ function AICore() {
 
   useFrame((state) => {
     if (!visible) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     if (innerRef.current) {
       innerRef.current.rotation.x = t * 0.4;
       innerRef.current.rotation.y = t * 0.3;
@@ -148,7 +148,7 @@ function NeuralNodesInstanced({
 
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     for (let i = 0; i < nodes.length; i++) {
       const s = Math.sin(t * 2 + i * 0.5) * 0.3 + 0.7;
       sharedDummy.position.set(nodes[i].pos[0], nodes[i].pos[1], nodes[i].pos[2]);
@@ -225,7 +225,7 @@ function EnergyField() {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     ref.current.rotation.y = t * 0.05;
     ref.current.rotation.x = t * 0.03;
   });

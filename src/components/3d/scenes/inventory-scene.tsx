@@ -63,7 +63,7 @@ function ConveyorBelt() {
 
   useFrame((state) => {
     if (!visible || !ref.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     ref.current.children.forEach((child, i) => {
       if (child instanceof THREE.Mesh) {
         child.position.x = ((t * 0.5 + i * 0.8) % 4) - 2;
@@ -111,7 +111,7 @@ function InventoryBars() {
 
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     bars.forEach((bar, i) => {
       const s = Math.sin(t * bar.speed + i * 0.5) * 0.3 + 0.7;
       sharedDummy.position.set(bar.x, bar.maxHeight / 2, 0);
@@ -159,7 +159,7 @@ function FloatingBoxes() {
 
   useFrame((state) => {
     if (!visible || !meshRef.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.getElapsedTime();
     boxes.forEach((box, i) => {
       sharedDummy.position.set(box.x, box.y + Math.sin(t * box.speed + i) * 0.3, box.z);
       sharedDummy.rotation.set(0, t * box.speed * 0.3, 0);
