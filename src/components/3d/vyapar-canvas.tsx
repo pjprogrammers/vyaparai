@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useCallback } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Suspense, useCallback, useRef } from "react";
+import { Canvas, type RootState } from "@react-three/fiber";
 import { Preload } from "@react-three/drei";
 import * as THREE from "three";
 import { CameraRig } from "./camera-rig";
@@ -16,9 +16,44 @@ import { CTAScene } from "./scenes/cta-scene";
 
 interface VyaparCanvasProps {
   scrollProgress: number;
+  onReady?: () => void;
 }
 
-export function VyaparCanvas({ scrollProgress }: VyaparCanvasProps) {
+export function VyaparCanvas({ scrollProgress, onReady }: VyaparCanvasProps) {
+  const readyCalled = useRef(false);
+
+  const handleCreated = useCallback(
+    (_state: RootState) => {
+      if (readyCalled.current) return;
+
+      Promise.all([
+        document.fonts.ready,
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve());
+          });
+        }),
+      ]).then(() => {
+        if (!readyCalled.current) {
+          readyCalled.current = true;
+          onReady?.();
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const w = window as any;
+          const markAssets = w.__splashMarkAssetsReady as
+            | (() => void)
+            | undefined;
+          const markFrame = w.__splashMarkFrameRendered as
+            | (() => void)
+            | undefined;
+          markAssets?.();
+          markFrame?.();
+        }
+      });
+    },
+    [onReady],
+  );
+
   return (
     <div className="fixed inset-0 z-0" style={{ pointerEvents: "none" }}>
       <Canvas
@@ -32,6 +67,7 @@ export function VyaparCanvas({ scrollProgress }: VyaparCanvasProps) {
         camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 100 }}
         dpr={[1, 1.5]}
         style={{ background: "transparent" }}
+        onCreated={handleCreated}
       >
         <Suspense fallback={null}>
           <CameraRig scrollProgress={scrollProgress} />

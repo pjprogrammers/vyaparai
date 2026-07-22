@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import dynamic from "next/dynamic";
 import { MarketingNav } from "@/components/marketing/nav";
 import { MarketingFooter } from "@/components/marketing/footer";
+import { SplashProvider } from "@/components/loading/splash-context";
+import { CinematicSplash } from "@/components/loading/cinematic-splash";
+import { RouteTransition } from "@/components/loading/route-transition";
 
 const VyaparCanvas = dynamic(
   () =>
@@ -24,17 +27,35 @@ export default function MarketingLayout({
     setScrollProgress(v);
   });
 
+  const handleCanvasReady = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+    const markAssets = w.__splashMarkAssetsReady as (() => void) | undefined;
+    const markFrame = w.__splashMarkFrameRendered as (() => void) | undefined;
+    markAssets?.();
+    markFrame?.();
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a]">
-      <div className="noise-overlay" />
+    <SplashProvider>
+      <div className="relative min-h-screen bg-[#0a0a0a]">
+        <div className="noise-overlay" />
 
-      <VyaparCanvas scrollProgress={scrollProgress} />
+        <CinematicSplash />
 
-      <MarketingNav />
+        <VyaparCanvas
+          scrollProgress={scrollProgress}
+          onReady={handleCanvasReady}
+        />
 
-      <main className="relative z-10">{children}</main>
+        <MarketingNav />
 
-      <MarketingFooter />
-    </div>
+        <main className="relative z-10">
+          <RouteTransition>{children}</RouteTransition>
+        </main>
+
+        <MarketingFooter />
+      </div>
+    </SplashProvider>
   );
 }
