@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function AIBrainScene() {
   return (
@@ -11,8 +12,6 @@ export function AIBrainScene() {
       <ambientLight intensity={0.1} />
       <pointLight position={[0, 0, 0]} intensity={3} color="#facc15" distance={15} />
       <pointLight position={[3, 2, 3]} intensity={1.5} color="#f59e0b" distance={10} />
-      <pointLight position={[-3, -2, 3]} intensity={1.5} color="#eab308" distance={10} />
-      <spotLight position={[0, 5, 0]} intensity={3} angle={0.5} color="#facc15" penumbra={1} />
 
       <Float speed={0.5} rotationIntensity={0.1} floatIntensity={0.3}>
         <AICore />
@@ -28,8 +27,10 @@ function AICore() {
   const innerRef = useRef<THREE.Mesh>(null!);
   const midRef = useRef<THREE.Mesh>(null!);
   const outerRef = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(4);
 
   useFrame((state) => {
+    if (!visible) return;
     const t = state.clock.elapsedTime;
     if (innerRef.current) {
       innerRef.current.rotation.x = t * 0.4;
@@ -135,8 +136,7 @@ function NeuralNetwork() {
         const dx = result[i].pos[0] - result[j].pos[0];
         const dy = result[i].pos[1] - result[j].pos[1];
         const dz = result[i].pos[2] - result[j].pos[2];
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (dist < 2) {
+        if (dx * dx + dy * dy + dz * dz < 4) {
           result[i].connections.push(j);
         }
       }
@@ -164,13 +164,11 @@ function NeuralNode({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(4);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const pulse = Math.sin(t * 2 + index * 0.5) * 0.3 + 0.7;
-      ref.current.scale.setScalar(pulse);
-    }
+    if (!visible || !ref.current) return;
+    ref.current.scale.setScalar(Math.sin(state.clock.elapsedTime * 2 + index * 0.5) * 0.3 + 0.7);
   });
 
   return (
@@ -190,8 +188,6 @@ function NeuralConnections({
 }: {
   nodes: { pos: [number, number, number]; connections: number[] }[];
 }) {
-  const ref = useRef<THREE.LineSegments>(null!);
-
   const geometry = useMemo(() => {
     const maxEdges = nodes.reduce((acc, n) => acc + n.connections.length, 0);
     const positions = new Float32Array(maxEdges * 6);
@@ -214,7 +210,7 @@ function NeuralConnections({
   }, [nodes]);
 
   return (
-    <lineSegments ref={ref} geometry={geometry}>
+    <lineSegments geometry={geometry}>
       <lineBasicMaterial
         color="#facc15"
         transparent
@@ -228,11 +224,11 @@ function NeuralConnections({
 
 function EnergyField() {
   const ref = useRef<THREE.Points>(null!);
+  const visible = useSceneVisible(4);
 
   const geometry = useMemo(() => {
     const count = 400;
     const positions = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
@@ -242,7 +238,6 @@ function EnergyField() {
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       positions[i * 3 + 2] = r * Math.cos(phi);
-      sizes[i] = Math.random() * 0.03 + 0.01;
     }
 
     const geo = new THREE.BufferGeometry();
@@ -251,10 +246,10 @@ function EnergyField() {
   }, []);
 
   useFrame((state) => {
-    if (ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.05;
-      ref.current.rotation.x = state.clock.elapsedTime * 0.03;
-    }
+    if (!visible || !ref.current) return;
+    const t = state.clock.elapsedTime;
+    ref.current.rotation.y = t * 0.05;
+    ref.current.rotation.x = t * 0.03;
   });
 
   return (

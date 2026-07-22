@@ -27,15 +27,6 @@ export default function MarketingLayout({
     setScrollProgress(v);
   });
 
-  const handleCanvasReady = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const w = window as any;
-    const markAssets = w.__splashMarkAssetsReady as (() => void) | undefined;
-    const markFrame = w.__splashMarkFrameRendered as (() => void) | undefined;
-    markAssets?.();
-    markFrame?.();
-  }, []);
-
   return (
     <SplashProvider>
       <div className="relative min-h-screen bg-[#0a0a0a]">
@@ -43,14 +34,11 @@ export default function MarketingLayout({
 
         <CinematicSplash />
 
-        <VyaparCanvas
-          scrollProgress={scrollProgress}
-          onReady={handleCanvasReady}
-        />
+        <VyaparCanvas scrollProgress={scrollProgress} />
 
         <MarketingNav />
 
-        <main className="relative z-10">
+        <main className="relative z-10 pt-16 lg:pt-20">
           <RouteTransition>{children}</RouteTransition>
         </main>
 

@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function AutomationScene() {
   return (
@@ -19,26 +20,26 @@ export function AutomationScene() {
   );
 }
 
-function AutomationPipeline() {
-  const nodes = [
-    { pos: [-3, 1, 0] as [number, number, number], label: "Invoice" },
-    { pos: [-1.5, 0, 0] as [number, number, number], label: "OCR" },
-    { pos: [0, 1, 0] as [number, number, number], label: "Inventory" },
-    { pos: [1.5, 0, 0] as [number, number, number], label: "GST" },
-    { pos: [3, 1, 0] as [number, number, number], label: "Reports" },
-  ];
+const PIPELINE_NODES = [
+  { pos: [-3, 1, 0] as [number, number, number], label: "Invoice" },
+  { pos: [-1.5, 0, 0] as [number, number, number], label: "OCR" },
+  { pos: [0, 1, 0] as [number, number, number], label: "Inventory" },
+  { pos: [1.5, 0, 0] as [number, number, number], label: "GST" },
+  { pos: [3, 1, 0] as [number, number, number], label: "Reports" },
+];
 
+function AutomationPipeline() {
   return (
     <group>
-      {nodes.map((node, i) => (
+      {PIPELINE_NODES.map((node, i) => (
         <PipelineNode key={i} {...node} index={i} />
       ))}
 
-      {nodes.slice(0, -1).map((node, i) => (
+      {PIPELINE_NODES.slice(0, -1).map((node, i) => (
         <ConnectionLine
           key={i}
           from={node.pos}
-          to={nodes[i + 1].pos}
+          to={PIPELINE_NODES[i + 1].pos}
           index={i}
         />
       ))}
@@ -56,16 +57,17 @@ function PipelineNode({
 }) {
   const ref = useRef<THREE.Mesh>(null!);
   const glowRef = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(5);
 
   useFrame((state) => {
+    if (!visible) return;
     const t = state.clock.elapsedTime;
     if (ref.current) {
-      const pulse = Math.sin(t * 2 + index * 0.8) * 0.15 + 1;
-      ref.current.scale.setScalar(pulse);
+      ref.current.scale.setScalar(Math.sin(t * 2 + index * 0.8) * 0.15 + 1);
     }
     if (glowRef.current) {
-      const glow = Math.sin(t * 1.5 + index * 0.6) * 0.3 + 0.7;
-      (glowRef.current.material as THREE.MeshStandardMaterial).opacity = glow * 0.2;
+      (glowRef.current.material as THREE.MeshStandardMaterial).opacity =
+        (Math.sin(t * 1.5 + index * 0.6) * 0.3 + 0.7) * 0.2;
     }
   });
 
@@ -106,6 +108,7 @@ function ConnectionLine({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(5);
 
   const midPoint = useMemo(() => {
     return [
@@ -126,11 +129,9 @@ function ConnectionLine({
   }, [from, to]);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const pulse = Math.sin(t * 3 + index * 1.2) * 0.3 + 0.7;
-      (ref.current.material as THREE.MeshStandardMaterial).opacity = pulse * 0.6;
-    }
+    if (!visible || !ref.current) return;
+    (ref.current.material as THREE.MeshStandardMaterial).opacity =
+      (Math.sin(state.clock.elapsedTime * 3 + index * 1.2) * 0.3 + 0.7) * 0.6;
   });
 
   return (
@@ -154,39 +155,39 @@ function ConnectionLine({
 
 function FlowParticles() {
   const ref = useRef<THREE.Points>(null!);
+  const visible = useSceneVisible(5);
 
-  const geometry = useMemo(() => {
+  const { geo, speeds } = useMemo(() => {
     const count = 100;
     const positions = new Float32Array(count * 3);
-    const speeds = new Float32Array(count);
+    const spd = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 8;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 3;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 2;
-      speeds[i] = 0.5 + Math.random() * 2;
+      spd[i] = 0.5 + Math.random() * 2;
     }
 
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    return { geo, speeds };
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    return { geo: geometry, speeds: spd };
   }, []);
 
-  useFrame((state) => {
-    if (!ref.current) return;
+  useFrame(() => {
+    if (!visible || !ref.current) return;
     const posAttr = ref.current.geometry.attributes.position as THREE.BufferAttribute;
     const arr = posAttr.array as Float32Array;
-    const t = state.clock.elapsedTime;
 
-    for (let i = 0; i < arr.length / 3; i++) {
-      arr[i * 3] += geometry.speeds[i] * 0.015;
+    for (let i = 0, len = arr.length / 3; i < len; i++) {
+      arr[i * 3] += speeds[i] * 0.015;
       if (arr[i * 3] > 4) arr[i * 3] = -4;
     }
     posAttr.needsUpdate = true;
   });
 
   return (
-    <points ref={ref} geometry={geometry.geo}>
+    <points ref={ref} geometry={geo}>
       <pointsMaterial
         size={0.03}
         color="#facc15"
@@ -235,14 +236,13 @@ function GraphDot({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(5);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const pulse = Math.sin(t * speed + index) * 0.3 + 0.7;
-      ref.current.scale.setScalar(pulse);
-      (ref.current.material as THREE.MeshStandardMaterial).opacity = pulse * 0.4;
-    }
+    if (!visible || !ref.current) return;
+    const pulse = Math.sin(state.clock.elapsedTime * speed + index) * 0.3 + 0.7;
+    ref.current.scale.setScalar(pulse);
+    (ref.current.material as THREE.MeshStandardMaterial).opacity = pulse * 0.4;
   });
 
   return (

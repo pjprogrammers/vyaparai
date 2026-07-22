@@ -25,12 +25,14 @@ export function ParticleField({
 }: ParticleFieldProps) {
   const meshRef = useRef<THREE.Points>(null!);
   const linesRef = useRef<THREE.LineSegments>(null!);
+  const prevLineCount = useRef(0);
 
   const { positions, velocities, linePositions, lineColors } = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
-    const lPos = new Float32Array(count * count * 6);
-    const lCol = new Float32Array(count * count * 6);
+    const maxLines = Math.min(count * 20, count * count);
+    const lPos = new Float32Array(maxLines * 6);
+    const lCol = new Float32Array(maxLines * 6);
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
@@ -58,6 +60,8 @@ export function ParticleField({
     return geo;
   }, [linePositions, lineColors]);
 
+  const connectDistSq = connectDistance * connectDistance;
+
   useFrame((_, delta) => {
     if (!meshRef.current) return;
     const posAttr = meshRef.current.geometry.attributes.position as THREE.BufferAttribute;
@@ -81,18 +85,18 @@ export function ParticleField({
       const lArr = lineAttr.array as Float32Array;
       const cArr = colAttr.array as Float32Array;
       let lineIdx = 0;
-      const maxLines = count * count;
+      const maxLines = lArr.length / 6;
 
       for (let i = 0; i < count && lineIdx < maxLines; i++) {
+        const i3 = i * 3;
         for (let j = i + 1; j < count && lineIdx < maxLines; j++) {
-          const i3 = i * 3;
           const j3 = j * 3;
           const dx = arr[i3] - arr[j3];
           const dy = arr[i3 + 1] - arr[j3 + 1];
           const dz = arr[i3 + 2] - arr[j3 + 2];
-          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          const distSq = dx * dx + dy * dy + dz * dz;
 
-          if (dist < connectDistance) {
+          if (distSq < connectDistSq) {
             const li = lineIdx * 6;
             lArr[li] = arr[i3];
             lArr[li + 1] = arr[i3 + 1];
@@ -101,7 +105,7 @@ export function ParticleField({
             lArr[li + 4] = arr[j3 + 1];
             lArr[li + 5] = arr[j3 + 2];
 
-            const alpha = 1 - dist / connectDistance;
+            const alpha = 1 - Math.sqrt(distSq) / connectDistance;
             cArr[li] = alpha * 0.98;
             cArr[li + 1] = alpha * 0.8;
             cArr[li + 2] = alpha * 0.08;
@@ -113,10 +117,15 @@ export function ParticleField({
         }
       }
 
-      for (let i = lineIdx * 6; i < maxLines * 6; i++) {
-        lArr[i] = 0;
-        cArr[i] = 0;
+      if (lineIdx < prevLineCount.current) {
+        const start = lineIdx * 6;
+        const end = prevLineCount.current * 6;
+        for (let i = start; i < end; i++) {
+          lArr[i] = 0;
+          cArr[i] = 0;
+        }
       }
+      prevLineCount.current = lineIdx;
 
       lineAttr.needsUpdate = true;
       colAttr.needsUpdate = true;

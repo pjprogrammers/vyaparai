@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function InventoryScene() {
   return (
@@ -11,7 +12,6 @@ export function InventoryScene() {
       <ambientLight intensity={0.15} />
       <directionalLight position={[5, 8, 5]} intensity={0.5} color="#facc15" />
       <pointLight position={[0, 3, 4]} intensity={2} color="#f59e0b" distance={12} />
-      <spotLight position={[-3, 6, 2]} intensity={2.5} angle={0.4} color="#facc15" penumbra={0.7} />
 
       <Float speed={0.8} rotationIntensity={0.05} floatIntensity={0.3}>
         <WarehouseStructure />
@@ -44,17 +44,16 @@ function WarehouseStructure() {
 }
 
 function ShelfRow({ x }: { x: number }) {
+  const shelfGeo = useMemo(() => new THREE.BoxGeometry(0.8, 0.03, 0.6), []);
+  const shelfMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: "#1a1a1a", metalness: 0.6, roughness: 0.3 }),
+    [],
+  );
+
   return (
     <group position={[x, 0, 0]}>
       {[0, 0.6, 1.2].map((y) => (
-        <mesh key={y} position={[0, y - 0.5, 0]}>
-          <boxGeometry args={[0.8, 0.03, 0.6]} />
-          <meshStandardMaterial
-            color="#1a1a1a"
-            metalness={0.6}
-            roughness={0.3}
-          />
-        </mesh>
+        <mesh key={y} position={[0, y - 0.5, 0]} geometry={shelfGeo} material={shelfMat} />
       ))}
     </group>
   );
@@ -62,16 +61,16 @@ function ShelfRow({ x }: { x: number }) {
 
 function ConveyorBelt() {
   const ref = useRef<THREE.Group>(null!);
+  const visible = useSceneVisible(2);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.children.forEach((child, i) => {
-        if (child instanceof THREE.Mesh) {
-          child.position.x = ((t * 0.5 + i * 0.8) % 4) - 2;
-        }
-      });
-    }
+    ref.current.children.forEach((child, i) => {
+      if (child instanceof THREE.Mesh) {
+        child.position.x = ((t * 0.5 + i * 0.8) % 4) - 2;
+      }
+    });
   });
 
   return (
@@ -133,13 +132,11 @@ function InventoryBar({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(2);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const pulse = Math.sin(t * speed + index * 0.5) * 0.3 + 0.7;
-      ref.current.scale.y = pulse;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.scale.y = Math.sin(state.clock.elapsedTime * speed + index * 0.5) * 0.3 + 0.7;
   });
 
   return (
@@ -194,13 +191,13 @@ function FloatingBox({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(2);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.position.y = y + Math.sin(t * speed + index) * 0.3;
-      ref.current.rotation.y = t * speed * 0.3;
-    }
+    ref.current.position.y = y + Math.sin(t * speed + index) * 0.3;
+    ref.current.rotation.y = t * speed * 0.3;
   });
 
   return (

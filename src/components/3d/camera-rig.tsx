@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -31,32 +31,74 @@ const SECTION_LOOKATS: [number, number, number][] = [
   [0, 0, 0],
 ];
 
+const totalSections = SECTION_POSITIONS.length - 1;
+
+const currentSectionRef = { current: 0 };
+
+export function useCurrentSection() {
+  return currentSectionRef;
+}
+
+export function useSceneVisible(sceneSection: number, threshold = 2) {
+  const diff = Math.abs(currentSectionRef.current - sceneSection);
+  return diff <= threshold;
+}
+
 export function CameraRig({ scrollProgress, mouseInfluence = 0.3 }: CameraRigProps) {
   const { camera, pointer } = useThree();
   const targetPos = useRef(new THREE.Vector3(0, 0, 8));
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
   const currentLookAt = useRef(new THREE.Vector3(0, 0, 0));
+  const tempVec = useRef(new THREE.Vector3());
   const idleTime = useRef(0);
+  const scrollRef = useRef(scrollProgress);
+  scrollRef.current = scrollProgress;
+  const aspectRef = useRef(1);
 
-  const totalSections = SECTION_POSITIONS.length - 1;
-  const sectionProgress = scrollProgress * totalSections;
-  const sectionIndex = Math.min(Math.floor(sectionProgress), totalSections - 1);
-  const t = sectionProgress - sectionIndex;
-
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     idleTime.current += delta;
 
-    const fromPos = SECTION_POSITIONS[sectionIndex];
-    const toPos = SECTION_POSITIONS[Math.min(sectionIndex + 1, totalSections)];
-    const fromLookAt = SECTION_LOOKATS[sectionIndex];
-    const toLookAt = SECTION_LOOKATS[Math.min(sectionIndex + 1, totalSections)];
+    const { gl, scene } = state;
+    const w = gl.domElement.clientWidth;
+    const h = gl.domElement.clientHeight;
+    const ar = w / h;
+    aspectRef.current = ar;
+
+    const isPortrait = ar < 0.85;
+    const isUltrawide = ar > 2;
+
+    let responsiveFOV = 45;
+    let responsiveZOffset = 0;
+
+    if (isPortrait) {
+      responsiveFOV = 45 + (0.85 - ar) * 40;
+      responsiveZOffset = (0.85 - ar) * 10;
+    } else if (isUltrawide) {
+      responsiveFOV = 45 - Math.min((ar - 2) * 5, 10);
+      responsiveZOffset = -Math.min((ar - 2) * 1.5, 3);
+    }
+
+    if ("fov" in camera) {
+      camera.fov = responsiveFOV;
+      camera.updateProjectionMatrix();
+    }
+
+    const sp = scrollRef.current * totalSections;
+    const si = Math.min(Math.floor(sp), totalSections - 1);
+    currentSectionRef.current = si;
+    const t = sp - si;
+
+    const fromPos = SECTION_POSITIONS[si];
+    const toPos = SECTION_POSITIONS[Math.min(si + 1, totalSections)];
+    const fromLookAt = SECTION_LOOKATS[si];
+    const toLookAt = SECTION_LOOKATS[Math.min(si + 1, totalSections)];
 
     const ease = t * t * (3 - 2 * t);
 
     targetPos.current.set(
       THREE.MathUtils.lerp(fromPos[0], toPos[0], ease),
       THREE.MathUtils.lerp(fromPos[1], toPos[1], ease),
-      THREE.MathUtils.lerp(fromPos[2], toPos[2], ease),
+      THREE.MathUtils.lerp(fromPos[2], toPos[2], ease) + responsiveZOffset,
     );
 
     targetLookAt.current.set(
@@ -71,17 +113,21 @@ export function CameraRig({ scrollProgress, mouseInfluence = 0.3 }: CameraRigPro
     const mouseOffsetX = pointer.x * mouseInfluence;
     const mouseOffsetY = pointer.y * mouseInfluence * 0.5;
 
-    camera.position.lerp(
-      new THREE.Vector3(
-        targetPos.current.x + idleX + mouseOffsetX,
-        targetPos.current.y + idleY + mouseOffsetY,
-        targetPos.current.z,
-      ),
-      delta * 2,
+    tempVec.current.set(
+      targetPos.current.x + idleX + mouseOffsetX,
+      targetPos.current.y + idleY + mouseOffsetY,
+      targetPos.current.z,
     );
+    camera.position.lerp(tempVec.current, delta * 2);
 
     currentLookAt.current.lerp(targetLookAt.current, delta * 2);
     camera.lookAt(currentLookAt.current);
+
+    const camZ = camera.position.z;
+    if (scene.fog instanceof THREE.Fog) {
+      scene.fog.near = Math.max(1, camZ - 7);
+      scene.fog.far = camZ + 17;
+    }
   });
 
   return null;

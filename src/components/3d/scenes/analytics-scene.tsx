@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function AnalyticsScene() {
   return (
@@ -26,13 +27,13 @@ export function AnalyticsScene() {
 
 function DashboardPanel() {
   const ref = useRef<THREE.Group>(null!);
+  const visible = useSceneVisible(3);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.y = Math.sin(t * 0.2) * 0.08;
-      ref.current.rotation.x = Math.sin(t * 0.15) * 0.03;
-    }
+    ref.current.rotation.y = Math.sin(t * 0.2) * 0.08;
+    ref.current.rotation.x = Math.sin(t * 0.15) * 0.03;
   });
 
   return (
@@ -136,13 +137,11 @@ function Bar3D({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(3);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const pulse = (Math.sin(t * speed + index * 0.4) + 1) / 2;
-      ref.current.scale.y = 0.3 + pulse * 0.7;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.scale.y = 0.3 + ((Math.sin(state.clock.elapsedTime * speed + index * 0.4) + 1) / 2) * 0.7;
   });
 
   return (
@@ -161,12 +160,11 @@ function Bar3D({
 
 function PieChart3D() {
   const ref = useRef<THREE.Group>(null!);
+  const visible = useSceneVisible(3);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.z = t * 0.2;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.rotation.z = state.clock.elapsedTime * 0.2;
   });
 
   const segments = useMemo(
@@ -184,7 +182,7 @@ function PieChart3D() {
     <group ref={ref} position={[-2, -1.2, 0.8]} rotation={[0.4, 0.2, 0]}>
       {segments.map((seg, i) => (
         <mesh key={i} rotation={[0, 0, seg.startAngle]}>
-          <ringGeometry args={[0.4 + i * 0.12, 0.5 + i * 0.12, 32, 1, seg.startAngle, seg.endAngle - seg.startAngle]} />
+          <ringGeometry args={[0.4 + i * 0.12, 0.5 + i * 0.12, 16, 1, seg.startAngle, seg.endAngle - seg.startAngle]} />
           <meshStandardMaterial
             color={seg.color}
             emissive={seg.color}
@@ -200,8 +198,9 @@ function PieChart3D() {
 }
 
 function LineChart3D() {
-  const groupRef = useRef<THREE.Group>(null!);
-  const dotsRef = useRef<THREE.Mesh[]>([]);
+  const dotsRef = useRef<THREE.InstancedMesh>(null!);
+  const visible = useSceneVisible(3);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const initialPositions = useMemo(() => {
     const positions: number[] = [];
@@ -214,34 +213,30 @@ function LineChart3D() {
   }, []);
 
   useFrame((state) => {
+    if (!visible || !dotsRef.current) return;
     const t = state.clock.elapsedTime;
-    dotsRef.current.forEach((dot, i) => {
-      if (dot) {
-        const x = (i / 19) * 3 - 1.5;
-        const y = Math.sin(t * 0.5 + i * 0.5) * 0.4 + Math.cos(t * 0.3 + i * 0.3) * 0.2;
-        dot.position.set(x, y, 0);
-      }
-    });
+    for (let i = 0; i < 20; i++) {
+      const x = (i / 19) * 3 - 1.5;
+      const y = Math.sin(t * 0.5 + i * 0.5) * 0.4 + Math.cos(t * 0.3 + i * 0.3) * 0.2;
+      dummy.position.set(x, y, 0);
+      dummy.updateMatrix();
+      dotsRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    dotsRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <group ref={groupRef} position={[0, 1.2, 0.5]}>
-      {Array.from({ length: 20 }, (_, i) => (
-        <mesh
-          key={i}
-          ref={(el) => { if (el) dotsRef.current[i] = el; }}
-          position={[initialPositions[i * 3], initialPositions[i * 3 + 1], 0]}
-        >
-          <sphereGeometry args={[0.025, 6, 6]} />
-          <meshStandardMaterial
-            color="#facc15"
-            emissive="#facc15"
-            emissiveIntensity={1.5}
-            transparent
-            opacity={0.7}
-          />
-        </mesh>
-      ))}
+    <group position={[0, 1.2, 0.5]}>
+      <instancedMesh ref={dotsRef} args={[undefined, undefined, 20]}>
+        <sphereGeometry args={[0.025, 6, 6]} />
+        <meshStandardMaterial
+          color="#facc15"
+          emissive="#facc15"
+          emissiveIntensity={1.5}
+          transparent
+          opacity={0.7}
+        />
+      </instancedMesh>
     </group>
   );
 }

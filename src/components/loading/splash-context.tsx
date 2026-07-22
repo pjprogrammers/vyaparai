@@ -58,6 +58,7 @@ export function SplashProvider({ children }: { children: ReactNode }) {
     startTime.current = Date.now();
     setVisible(true);
     setReady(false);
+    document.body.classList.add("splash-active");
 
     const minTimer = setTimeout(() => {
       minTimerDone.current = true;
@@ -76,6 +77,7 @@ export function SplashProvider({ children }: { children: ReactNode }) {
     return () => {
       clearTimeout(minTimer);
       clearTimeout(maxTimer);
+      document.body.classList.remove("splash-active");
     };
   }, []);
 
@@ -105,6 +107,7 @@ export function SplashProvider({ children }: { children: ReactNode }) {
       setVisible(false);
       setDismissing(false);
       setReady(true);
+      document.body.classList.remove("splash-active");
     }, 800);
   }, [dismissing, ready]);
 
@@ -121,9 +124,9 @@ export function SplashProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (visible) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__splashMarkAssetsReady = markAssetsReady;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__splashMarkFrameRendered = markFrameRendered;
+      (window as any).__splashMarkAssetsReady = markAssetsReady;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__splashMarkFrameRendered = markFrameRendered;
     }
   }, [visible, markAssetsReady, markFrameRendered]);
 

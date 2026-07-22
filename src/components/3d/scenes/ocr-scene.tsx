@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function OCRScene() {
   return (
@@ -29,13 +30,13 @@ export function OCRScene() {
 
 function InvoiceDocument() {
   const ref = useRef<THREE.Group>(null!);
+  const visible = useSceneVisible(1);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.y = Math.sin(t * 0.3) * 0.1;
-      ref.current.rotation.x = Math.sin(t * 0.2) * 0.05;
-    }
+    ref.current.rotation.y = Math.sin(t * 0.3) * 0.1;
+    ref.current.rotation.x = Math.sin(t * 0.2) * 0.05;
   });
 
   return (
@@ -93,40 +94,24 @@ function InvoiceDocument() {
 
 function LaserScanner() {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(1);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.position.y = Math.sin(t * 1.5) * 1.5;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 1.5;
   });
 
   return (
-    <group>
-      <mesh ref={ref} position={[0, 0, 0.1]}>
-        <planeGeometry args={[3, 0.02]} />
-        <meshStandardMaterial
-          color="#facc15"
-          emissive="#facc15"
-          emissiveIntensity={3}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-
-      {[0.1, -0.1].map((z, i) => (
-        <mesh key={i} position={[0, 0, z]}>
-          <planeGeometry args={[3, 1.5]} />
-          <meshStandardMaterial
-            color="#facc15"
-            emissive="#facc15"
-            emissiveIntensity={0.5}
-            transparent
-            opacity={0.02}
-          />
-        </mesh>
-      ))}
-    </group>
+    <mesh ref={ref} position={[0, 0, 0.1]}>
+      <planeGeometry args={[3, 0.02]} />
+      <meshStandardMaterial
+        color="#facc15"
+        emissive="#facc15"
+        emissiveIntensity={3}
+        transparent
+        opacity={0.8}
+      />
+    </mesh>
   );
 }
 
@@ -167,13 +152,13 @@ function FloatingChar({
   phase: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(1);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.position.y = y + Math.sin(t * speed + phase) * 0.2;
-      (ref.current.material as THREE.MeshStandardMaterial).opacity = 0.3 + Math.sin(t * speed + phase) * 0.2;
-    }
+    ref.current.position.y = y + Math.sin(t * speed + phase) * 0.2;
+    (ref.current.material as THREE.MeshStandardMaterial).opacity = 0.3 + Math.sin(t * speed + phase) * 0.2;
   });
 
   return (
@@ -191,15 +176,6 @@ function FloatingChar({
 }
 
 function OutputDisplay() {
-  const ref = useRef<THREE.Group>(null!);
-
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.x = -0.3;
-    }
-  });
-
   const bars = useMemo(
     () =>
       Array.from({ length: 6 }, (_, i) => ({
@@ -211,7 +187,7 @@ function OutputDisplay() {
   );
 
   return (
-    <group ref={ref}>
+    <group rotation={[-0.3, 0, 0]}>
       <mesh position={[0, 0, -0.01]}>
         <planeGeometry args={[2.5, 1.5]} />
         <meshStandardMaterial
@@ -238,13 +214,11 @@ function OutputBar({
   delay: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(1);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      const scale = Math.min(1, Math.max(0, (t - delay) * 2));
-      ref.current.scale.y = scale;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.scale.y = Math.min(1, Math.max(0, (state.clock.elapsedTime - delay) * 2));
   });
 
   return (

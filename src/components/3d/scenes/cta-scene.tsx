@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { useSceneVisible } from "../camera-rig";
 
 export function CTAScene() {
   return (
@@ -24,6 +25,7 @@ export function CTAScene() {
 
 function ConvergingParticles() {
   const ref = useRef<THREE.Points>(null!);
+  const visible = useSceneVisible(7);
 
   const { geometry, velocities } = useMemo(() => {
     const count = 500;
@@ -50,28 +52,28 @@ function ConvergingParticles() {
   }, []);
 
   useFrame((state) => {
-    if (!ref.current) return;
+    if (!visible || !ref.current) return;
     const posAttr = ref.current.geometry.attributes.position as THREE.BufferAttribute;
     const arr = posAttr.array as Float32Array;
-    const t = state.clock.elapsedTime;
 
-    for (let i = 0; i < arr.length / 3; i++) {
-      const dist = Math.sqrt(
-        arr[i * 3] ** 2 + arr[i * 3 + 1] ** 2 + arr[i * 3 + 2] ** 2,
-      );
+    for (let i = 0, len = arr.length / 3; i < len; i++) {
+      const i3 = i * 3;
+      const dx = arr[i3];
+      const dy = arr[i3 + 1];
+      const dz = arr[i3 + 2];
 
-      if (dist < 0.5) {
+      if (dx * dx + dy * dy + dz * dz < 0.25) {
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
         const r = 3 + Math.random() * 4;
-        arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-        arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        arr[i * 3 + 2] = r * Math.cos(phi);
+        arr[i3] = r * Math.sin(phi) * Math.cos(theta);
+        arr[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        arr[i3 + 2] = r * Math.cos(phi);
       }
 
-      arr[i * 3] += velocities[i * 3];
-      arr[i * 3 + 1] += velocities[i * 3 + 1];
-      arr[i * 3 + 2] += velocities[i * 3 + 2];
+      arr[i3] += velocities[i3];
+      arr[i3 + 1] += velocities[i3 + 1];
+      arr[i3 + 2] += velocities[i3 + 2];
     }
     posAttr.needsUpdate = true;
   });
@@ -93,18 +95,17 @@ function ConvergingParticles() {
 
 function LogoFormation() {
   const ref = useRef<THREE.Group>(null!);
+  const visible = useSceneVisible(7);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.y = Math.sin(t * 0.3) * 0.1;
-    }
+    if (!visible || !ref.current) return;
+    ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
   });
 
   return (
     <group ref={ref}>
       <mesh>
-        <torusGeometry args={[1.2, 0.05, 16, 64]} />
+        <torusGeometry args={[1.2, 0.05, 8, 32]} />
         <meshStandardMaterial
           color="#facc15"
           emissive="#facc15"
@@ -115,7 +116,7 @@ function LogoFormation() {
       </mesh>
 
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.2, 0.03, 16, 64]} />
+        <torusGeometry args={[1.2, 0.03, 8, 32]} />
         <meshStandardMaterial
           color="#f59e0b"
           emissive="#f59e0b"
@@ -126,7 +127,7 @@ function LogoFormation() {
       </mesh>
 
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <torusGeometry args={[1.2, 0.03, 16, 64]} />
+        <torusGeometry args={[1.2, 0.03, 8, 32]} />
         <meshStandardMaterial
           color="#eab308"
           emissive="#eab308"
@@ -195,18 +196,18 @@ function EnergyRing({
   index: number;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const visible = useSceneVisible(7);
 
   useFrame((state) => {
+    if (!visible || !ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.x = Math.sin(t * rotationSpeed + index) * 0.5;
-      ref.current.rotation.y = t * speed;
-    }
+    ref.current.rotation.x = Math.sin(t * rotationSpeed + index) * 0.5;
+    ref.current.rotation.y = t * speed;
   });
 
   return (
     <mesh ref={ref}>
-      <torusGeometry args={[radius, 0.005, 8, 64]} />
+      <torusGeometry args={[radius, 0.005, 8, 32]} />
       <meshStandardMaterial
         color="#facc15"
         emissive="#facc15"
