@@ -127,7 +127,7 @@ export function GlowCard({
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className={`relative rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm transition-colors hover:border-indigo-500/30 hover:bg-slate-800/50 ${className}`}
+      className={`relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-yellow-400/30 hover:bg-white/10 ${className}`}
     >
       {children}
     </motion.div>
@@ -146,7 +146,7 @@ export function FloatingBadge({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={`inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-sm font-medium text-indigo-400 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full border border-yellow-400/30 bg-yellow-500/10 px-4 py-1.5 text-sm font-medium text-yellow-400 ${className}`}
     >
       {children}
     </motion.span>

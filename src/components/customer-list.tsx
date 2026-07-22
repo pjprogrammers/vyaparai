@@ -80,7 +80,7 @@ export function CustomerList({ businessId }: { businessId: string }) {
       </CardHeader>
       <CardContent className="space-y-2">
         {showAdd && (
-          <div className="space-y-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-3">
+          <div className="space-y-2 rounded-lg border border-yellow-400/30 bg-yellow-500/10 p-3">
             <Input placeholder="Customer name" value={newName} onChange={(e) => setNewName(e.target.value)} />
             <Input placeholder="Phone (optional)" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
             {addError && <p className="text-xs text-red-400">{addError}</p>}
@@ -99,7 +99,7 @@ export function CustomerList({ businessId }: { businessId: string }) {
           </div>
         ) : (
           customers.map((c) => (
-            <div key={c.customerId} className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-800/30 p-3 text-sm">
+            <div key={c.customerId} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
               <div>
                 <p className="font-medium text-white">{c.name}</p>
                 {c.phone && <p className="text-xs text-slate-400">{c.phone}</p>}

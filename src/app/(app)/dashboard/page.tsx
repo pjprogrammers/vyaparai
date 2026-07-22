@@ -85,7 +85,7 @@ export default function DashboardPage() {
   }, [businessId, loading, user, getIdToken]);
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-10 text-center text-slate-400">Loading…</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-10 text-center text-neutral-400">Loading…</div>;
   }
 
   if (needsEmailVerification(user)) {
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               <Mail className="h-8 w-8 text-amber-400" />
             </div>
             <h2 className="text-xl font-bold text-white">Verify your email</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-neutral-400">
               We sent a verification link to <strong className="text-white">{user?.email}</strong>. Please verify your email to access the dashboard.
             </p>
             <button
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={logout}
-              className="w-full text-sm text-slate-400 hover:text-white transition"
+              className="w-full text-sm text-neutral-400 hover:text-white transition"
             >
               Sign out
             </button>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold text-white">
               Good Morning, {user?.displayName?.split(" ")[0] ?? "there"}! 👋
             </h1>
-            <p className="text-sm text-slate-400">Your Business Summary</p>
+            <p className="text-sm text-neutral-400">Your Business Summary</p>
           </div>
           <div className="flex items-center gap-3">
             {data && data.unreadNotifications > 0 && (
@@ -177,10 +177,10 @@ export default function DashboardPage() {
               key={stat.label}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
             >
-              <Card className={`p-3 border-slate-700/50 bg-slate-800/60 backdrop-blur-sm ${stat.warn ? "border-amber-500/30" : ""}`}>
+              <Card className={`p-3 border-white/10 bg-white/5 backdrop-blur-sm ${stat.warn ? "border-amber-500/30" : ""}`}>
                 <div className="flex items-center gap-1.5">
-                  <span className={stat.warn ? "text-amber-500" : "text-slate-400"}>{stat.icon}</span>
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500">{stat.label}</p>
+                  <span className={stat.warn ? "text-amber-500" : "text-neutral-400"}>{stat.icon}</span>
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">{stat.label}</p>
                 </div>
                 <p className={`mt-1 text-lg font-bold ${stat.warn ? "text-amber-400" : "text-white"}`}>{stat.value}</p>
               </Card>
@@ -209,17 +209,17 @@ export default function DashboardPage() {
         >
           <SalesRecorder businessId={businessId} />
 
-          <Card className="border-slate-700/50 bg-slate-800/60 backdrop-blur-sm">
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-base text-white">Inventory</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-64 overflow-y-auto">
               {!data || data.products.length === 0 ? (
-                <p className="text-sm text-slate-400">No products yet. Upload an invoice to populate stock.</p>
+                <p className="text-sm text-neutral-400">No products yet. Upload an invoice to populate stock.</p>
               ) : (
                 data.products.map((p) => (
                   <div key={p.id} className="flex items-center justify-between text-sm">
-                    <span className="text-slate-300">{p.name}</span>
+                    <span className="text-neutral-300">{p.name}</span>
                     <span className="font-medium text-white">
                       {p.quantity} {p.unit ?? "pcs"}
                       {p.quantity <= (p.minimumStock ?? 10) && (
@@ -252,13 +252,13 @@ export default function DashboardPage() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3"
         >
-          <Card className="border-slate-700/50 bg-slate-800/60 backdrop-blur-sm">
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-base text-white">AI Business Insights</CardTitle>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="border-white/10 text-neutral-300 hover:bg-white/10"
                 onClick={async () => {
                   const token = user ? await getIdToken() : null;
                   const authHeader: Record<string, string> = token ? { authorization: `Bearer ${token}` } : {};
@@ -277,22 +277,22 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-2 max-h-64 overflow-y-auto">
               {!data || data.insights.length === 0 ? (
-                <p className="text-sm text-slate-400">No insights yet. Click Generate to run the AI engine.</p>
+                <p className="text-sm text-neutral-400">No insights yet. Click Generate to run the AI engine.</p>
               ) : (
                 data.insights.map((i) => (
-                  <p key={i.insightId} className="whitespace-pre-line text-sm text-slate-300">{i.message}</p>
+                  <p key={i.insightId} className="whitespace-pre-line text-sm text-neutral-300">{i.message}</p>
                 ))
               )}
             </CardContent>
           </Card>
 
-          <Card className="border-slate-700/50 bg-slate-800/60 backdrop-blur-sm">
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-base text-white">AI Stock Alerts</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-64 overflow-y-auto">
               {!data || data.alerts.length === 0 ? (
-                <p className="text-sm text-slate-400">Stock healthy. No alerts.</p>
+                <p className="text-sm text-neutral-400">Stock healthy. No alerts.</p>
               ) : (
                 data.alerts.map((a, i) => (
                   <div key={i} className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300">{a}</div>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2"
         >
-          <Card className="border-slate-700/50 bg-slate-800/60 backdrop-blur-sm">
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-base text-white">Sales & Expense Trend</CardTitle>
             </CardHeader>
@@ -326,29 +326,29 @@ export default function DashboardPage() {
                   }
                 />
               ) : (
-                <p className="text-sm text-slate-400">Add sales to see the trend.</p>
+                <p className="text-sm text-neutral-400">Add sales to see the trend.</p>
               )}
             </CardContent>
           </Card>
 
-          <Card className="border-slate-700/50 bg-slate-800/60 backdrop-blur-sm">
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-base text-white">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 max-h-64 overflow-y-auto">
               {(!data || (data.recentSales.length === 0 && data.recentExpenses.length === 0)) ? (
-                <p className="text-sm text-slate-400">No activity yet. Record a sale or upload an invoice.</p>
+                <p className="text-sm text-neutral-400">No activity yet. Record a sale or upload an invoice.</p>
               ) : (
                 <>
                   {data?.recentSales.map((s) => (
                     <div key={s.saleId} className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2 text-sm">
-                      <div><span className="font-medium text-emerald-400">Sale</span><span className="text-slate-400"> to {s.customer}</span></div>
+                      <div><span className="font-medium text-emerald-400">Sale</span><span className="text-neutral-400"> to {s.customer}</span></div>
                       <span className="font-semibold text-emerald-300">+₹{s.amount.toLocaleString("en-IN")}</span>
                     </div>
                   ))}
                   {data?.recentExpenses.map((e) => (
                     <div key={e.expenseId} className="flex items-center justify-between rounded-lg border border-red-500/20 bg-red-500/5 p-2 text-sm">
-                      <div><span className="font-medium text-red-400">Expense</span><span className="text-slate-400"> {e.category}</span></div>
+                      <div><span className="font-medium text-red-400">Expense</span><span className="text-neutral-400"> {e.category}</span></div>
                       <span className="font-semibold text-red-300">-₹{e.amount.toLocaleString("en-IN")}</span>
                     </div>
                   ))}

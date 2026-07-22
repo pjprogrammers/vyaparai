@@ -93,7 +93,7 @@ export function SupplierList({ businessId }: { businessId: string }) {
       </CardHeader>
       <CardContent className="space-y-2">
         {showAdd && (
-          <div className="space-y-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-3">
+          <div className="space-y-2 rounded-lg border border-yellow-400/30 bg-yellow-500/10 p-3">
             <Input placeholder="Supplier name" value={newName} onChange={(e) => setNewName(e.target.value)} />
             <Input placeholder="Phone (optional)" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
             <Input placeholder="Email (optional)" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
@@ -113,7 +113,7 @@ export function SupplierList({ businessId }: { businessId: string }) {
           </div>
         ) : (
           suppliers.map((s) => (
-            <div key={s.supplierId} className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-800/30 p-3 text-sm">
+            <div key={s.supplierId} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
               <div>
                 <p className="font-medium text-white">{s.name}</p>
                 {s.phone && <p className="text-xs text-slate-400">{s.phone}</p>}

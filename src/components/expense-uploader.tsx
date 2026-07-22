@@ -54,7 +54,7 @@ export function ExpenseUploader({ businessId }: { businessId: string }) {
           type="file"
           accept="image/*,application/pdf"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm text-slate-400 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-300"
+          className="block w-full text-sm text-slate-400 file:mr-4 file:rounded-xl file:border-0 file:bg-yellow-500/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-yellow-300"
         />
         <Button
           onClick={handleUpload}

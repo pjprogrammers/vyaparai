@@ -74,14 +74,14 @@ export function CustomerAssistant({ businessId }: { businessId: string }) {
         </div>
 
         {draft && (
-          <div className="space-y-3 rounded-xl border border-slate-700 bg-slate-800/50 p-3">
+          <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-3">
             <div>
               <p className="text-xs font-semibold uppercase text-slate-400">Inventory Check (grounding)</p>
               <p className="whitespace-pre-line text-sm text-slate-300">{draft.inventoryCheck}</p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase text-slate-400">AI Draft (awaits approval)</p>
-              <p className="whitespace-pre-line rounded-lg bg-indigo-500/10 p-2 text-sm text-white">
+              <p className="whitespace-pre-line rounded-lg bg-yellow-500/10 p-2 text-sm text-white">
                 {draft.draftResponse}
               </p>
             </div>

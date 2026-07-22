@@ -91,8 +91,8 @@ export function NotificationsPanel({ businessId }: { businessId: string }) {
               key={n.notificationId}
               className={`rounded-lg border p-3 text-sm ${
                 n.read
-                  ? "border-slate-700/50 bg-slate-800/30"
-                  : "border-indigo-500/30 bg-indigo-500/10"
+                  ? "border-white/10 bg-white/5"
+                  : "border-yellow-400/30 bg-yellow-500/10"
               }`}
             >
               <div className="flex items-start gap-2">

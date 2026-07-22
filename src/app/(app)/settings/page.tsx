@@ -85,8 +85,8 @@ export default function SettingsPage() {
     setSaving(false);
   }
 
-  if (loading) return <div className="p-10 text-center text-slate-500">Loading…</div>;
-  if (!business) return <div className="p-10 text-center text-slate-500">No business found. Complete setup first.</div>;
+  if (loading) return <div className="p-10 text-center text-neutral-400">Loading…</div>;
+  if (!business) return <div className="p-10 text-center text-neutral-400">No business found. Complete setup first.</div>;
 
   return (
     <main className="relative min-h-screen bg-[#0a0a0a] text-white">
@@ -100,13 +100,13 @@ export default function SettingsPage() {
           <h1 className="text-2xl font-bold text-white">Business Settings</h1>
         </header>
 
-        <Card className="bg-slate-800/80 backdrop-blur-xl border-slate-700">
+        <Card className="bg-white/5 backdrop-blur-xl border-white/10">
           <CardHeader><CardTitle className="text-base text-white">Business Logo</CardTitle></CardHeader>
           <CardContent className="flex items-center gap-4">
             {business.logoUrl ? (
-              <img src={business.logoUrl} alt="Logo" className="h-16 w-16 rounded-lg object-cover border border-slate-600" />
+              <img src={business.logoUrl} alt="Logo" className="h-16 w-16 rounded-lg object-cover border border-white/10" />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-dashed border-slate-600 bg-slate-900/50 text-slate-400">
+              <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 text-neutral-400">
                 <Upload className="h-6 w-6" />
               </div>
             )}
@@ -116,61 +116,61 @@ export default function SettingsPage() {
                 {uploading ? "Uploading…" : "Upload Logo"}
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
               </label>
-              <p className="mt-1 text-xs text-slate-500">PNG, JPG up to 2MB. Shows on invoices.</p>
+              <p className="mt-1 text-xs text-neutral-500">PNG, JPG up to 2MB. Shows on invoices.</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/80 backdrop-blur-xl border-slate-700">
+        <Card className="bg-white/5 backdrop-blur-xl border-white/10">
           <CardHeader><CardTitle className="text-base text-white">Business Information</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-400">Business Name</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.name} onChange={(e) => setBusiness({ ...business, name: e.target.value })} />
+                <label className="text-xs font-medium text-neutral-400">Business Name</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.name} onChange={(e) => setBusiness({ ...business, name: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-400">Category</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.category} disabled />
+                <label className="text-xs font-medium text-neutral-400">Category</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.category} disabled />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-400">Address</label>
-              <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.address} onChange={(e) => setBusiness({ ...business, address: e.target.value })} />
+              <label className="text-xs font-medium text-neutral-400">Address</label>
+              <Input className="bg-white/5 border-white/10 text-white" value={business.address} onChange={(e) => setBusiness({ ...business, address: e.target.value })} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-400">GSTIN</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.gst} onChange={(e) => setBusiness({ ...business, gst: e.target.value })} />
+                <label className="text-xs font-medium text-neutral-400">GSTIN</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.gst} onChange={(e) => setBusiness({ ...business, gst: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-400">Phone</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.phone ?? ""} onChange={(e) => setBusiness({ ...business, phone: e.target.value })} placeholder="+91 XXXXX XXXXX" />
+                <label className="text-xs font-medium text-neutral-400">Phone</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.phone ?? ""} onChange={(e) => setBusiness({ ...business, phone: e.target.value })} placeholder="+91 XXXXX XXXXX" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-400">Email</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.email ?? ""} onChange={(e) => setBusiness({ ...business, email: e.target.value })} placeholder="business@example.com" />
+                <label className="text-xs font-medium text-neutral-400">Email</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.email ?? ""} onChange={(e) => setBusiness({ ...business, email: e.target.value })} placeholder="business@example.com" />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-400">Website</label>
-                <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.website ?? ""} onChange={(e) => setBusiness({ ...business, website: e.target.value })} placeholder="https://example.com" />
+                <label className="text-xs font-medium text-neutral-400">Website</label>
+                <Input className="bg-white/5 border-white/10 text-white" value={business.website ?? ""} onChange={(e) => setBusiness({ ...business, website: e.target.value })} placeholder="https://example.com" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/80 backdrop-blur-xl border-slate-700">
+        <Card className="bg-white/5 backdrop-blur-xl border-white/10">
           <CardHeader><CardTitle className="text-base text-white">Payment Details</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-slate-400">UPI ID</label>
-              <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.upiId ?? ""} onChange={(e) => setBusiness({ ...business, upiId: e.target.value })} placeholder="yourname@upi" />
+              <label className="text-xs font-medium text-neutral-400">UPI ID</label>
+              <Input className="bg-white/5 border-white/10 text-white" value={business.upiId ?? ""} onChange={(e) => setBusiness({ ...business, upiId: e.target.value })} placeholder="yourname@upi" />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-400">Bank Details</label>
-              <Input className="bg-slate-900/50 border-slate-600 text-white" value={business.bankDetails ?? ""} onChange={(e) => setBusiness({ ...business, bankDetails: e.target.value })} placeholder="Bank Name, A/C No, IFSC" />
+              <label className="text-xs font-medium text-neutral-400">Bank Details</label>
+              <Input className="bg-white/5 border-white/10 text-white" value={business.bankDetails ?? ""} onChange={(e) => setBusiness({ ...business, bankDetails: e.target.value })} placeholder="Bank Name, A/C No, IFSC" />
             </div>
           </CardContent>
         </Card>

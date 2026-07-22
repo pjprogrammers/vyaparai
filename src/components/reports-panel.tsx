@@ -86,7 +86,7 @@ export function ReportsPanel({ businessId }: { businessId: string }) {
           <p className="text-sm text-slate-400">No reports yet. Click a period button to generate.</p>
         ) : (
           reports.map((r) => (
-            <div key={r.reportId} className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-3 text-sm space-y-1">
+            <div key={r.reportId} className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="capitalize">{r.period}</Badge>
