@@ -2,13 +2,7 @@
 
 import { type ReactNode, useRef } from "react";
 import { motion, useInView } from "motion/react";
-import dynamic from "next/dynamic";
 import { GridBackground, GradientOrb, FloatingDots } from "./backgrounds";
-
-const MarketingScene3D = dynamic(
-  () => import("./scenes/hero-scene").then((m) => m.HeroScene),
-  { ssr: false },
-);
 
 function Reveal({
   children,

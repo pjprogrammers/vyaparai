@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/components/auth-provider";
 import { setupBusinessAction } from "@/app/actions/setup";
 import type { BusinessCategory } from "@/lib/types";
-import dynamic from "next/dynamic";
 import {
   Eye,
   EyeOff,
@@ -19,12 +18,7 @@ import {
   GradientOrb,
   FloatingDots,
   GridBackground,
-} from "@/components/3d/backgrounds";
-
-const AuthScene = dynamic(
-  () => import("@/components/3d/auth-scene").then((m) => m.AuthScene3D),
-  { ssr: false },
-);
+} from "@/components/marketing/backgrounds";
 
 const CATEGORIES: BusinessCategory[] = [
   "Grocery Store",
@@ -167,7 +161,6 @@ function AuthPageInner() {
   if (signupSuccess) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
-        <AuthScene />
         <GridBackground />
         <GradientOrb className="w-[400px] h-[400px] top-1/4 left-1/4" color="#facc15" />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
@@ -191,7 +184,6 @@ function AuthPageInner() {
   if (setupOpen) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
-        <AuthScene />
         <GridBackground />
         <GradientOrb className="w-[400px] h-[400px] bottom-1/4 right-1/4" color="#f59e0b" />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
@@ -216,7 +208,6 @@ function AuthPageInner() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 overflow-hidden">
-      <AuthScene className="opacity-50" />
       <GridBackground />
       <GradientOrb className="w-[500px] h-[500px] -top-20 -left-20" color="#facc15" />
       <GradientOrb className="w-[400px] h-[400px] -bottom-20 -right-20" color="#f59e0b" delay={2} />

@@ -7,13 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/auth-provider";
 import { getBusinessAction, updateBusinessAction } from "@/app/actions/setup";
 import { Settings, Upload, Save } from "lucide-react";
-import dynamic from "next/dynamic";
-import { GradientOrb, GridBackground } from "@/components/3d/backgrounds";
+import { GradientOrb, GridBackground } from "@/components/marketing/backgrounds";
 
-const DashboardScene3D = dynamic(
-  () => import("@/components/3d/dashboard-scene").then((m) => m.DashboardScene3D),
-  { ssr: false }
-);
 import type { Business } from "@/lib/types";
 
 export default function SettingsPage() {
@@ -92,7 +87,6 @@ export default function SettingsPage() {
     <main className="relative min-h-screen bg-[#0a0a0a] text-white">
       <GridBackground />
       <GradientOrb className="top-20 -right-32 w-96 h-96" color="#facc15" />
-      <div className="pointer-events-none fixed inset-0 z-0"><DashboardScene3D /></div>
 
       <div className="relative z-10 mx-auto max-w-2xl space-y-6 p-6">
         <header className="flex items-center gap-3">

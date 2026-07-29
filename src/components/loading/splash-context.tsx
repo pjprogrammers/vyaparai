@@ -9,7 +9,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isFullyReady } from "@/components/3d/responsive-context";
 
 const SPLASH_SESSION_KEY = "vyaparai_splash_seen";
 const MIN_DURATION_MS = 1200;
@@ -38,7 +37,6 @@ export function SplashProvider({ children }: { children: ReactNode }) {
 
   const minTimerDone = useRef(false);
   const fontsReady = useRef(false);
-  const all3DReady = useRef(false);
   const startTime = useRef(0);
 
   const shouldShowSplash = useRef(false);
@@ -85,8 +83,7 @@ export function SplashProvider({ children }: { children: ReactNode }) {
   function checkReady() {
     if (
       minTimerDone.current &&
-      fontsReady.current &&
-      all3DReady.current
+      fontsReady.current
     ) {
       dismiss();
     }
@@ -110,34 +107,6 @@ export function SplashProvider({ children }: { children: ReactNode }) {
       setReady(true);
       document.body.classList.remove("splash-active");
     }, 800);
-  }, []);
-
-  /* Poll readinessStore until the full 3D system is ready */
-  useEffect(() => {
-    if (!shouldShowSplash.current) return;
-
-    const interval = setInterval(() => {
-      if (isFullyReady()) {
-        all3DReady.current = true;
-        clearInterval(interval);
-        checkReady();
-      }
-    }, 100);
-
-    /* Also mark via global callbacks for the canvas */
-    const markAssetsReady = () => {
-      /* Canvas signals that shaders compiled + hero constructed */
-    };
-    const markFrameRendered = () => {
-      /* Canvas signals that first stable frame rendered */
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__splashMarkAssetsReady = markAssetsReady;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__splashMarkFrameRendered = markFrameRendered;
-
-    return () => clearInterval(interval);
   }, []);
 
   return (

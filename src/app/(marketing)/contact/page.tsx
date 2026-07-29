@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { seoMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema } from "@/lib/seo/schema";
 import { JsonLd } from "@/components/seo/json-ld";
-import { MarketingPageWrapper, AnimatedH1, AnimatedP, AnimatedCard, StaggerList, StaggerListItem } from "@/components/3d/marketing-wrapper";
+import { MarketingPageWrapper, AnimatedH1, AnimatedP, AnimatedCard, StaggerList, StaggerListItem } from "@/components/marketing/marketing-wrapper";
 
 export const metadata: Metadata = seoMetadata({
   title: "Contact VyaparAI — AI for Indian MSMEs",

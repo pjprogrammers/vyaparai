@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { seoMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, articleSchema } from "@/lib/seo/schema";
 import { JsonLd } from "@/components/seo/json-ld";
-import { MarketingPageWrapper, AnimatedH1, AnimatedArticle } from "@/components/3d/marketing-wrapper";
+import { MarketingPageWrapper, AnimatedH1, AnimatedArticle } from "@/components/marketing/marketing-wrapper";
 
 export const metadata: Metadata = seoMetadata({
   title: "AI Inventory Management: A Practical Guide | VyaparAI",

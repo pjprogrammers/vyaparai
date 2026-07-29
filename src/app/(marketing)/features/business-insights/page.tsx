@@ -4,7 +4,7 @@ import { seoMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema } from "@/lib/seo/schema";
 import { JsonLd } from "@/components/seo/json-ld";
 import { FaqSection, type FaqItem } from "@/components/seo/faq";
-import { MarketingPageWrapper, AnimatedH1, AnimatedP, AnimatedArticle } from "@/components/3d/marketing-wrapper";
+import { MarketingPageWrapper, AnimatedH1, AnimatedP, AnimatedArticle } from "@/components/marketing/marketing-wrapper";
 
 export const metadata: Metadata = seoMetadata({
   title: "AI Business Insights & Analytics | VyaparAI",

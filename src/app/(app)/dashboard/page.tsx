@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
 import { useAuth } from "@/components/auth-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,15 +16,10 @@ import { CustomerList } from "@/components/customer-list";
 import { SalesRecorder } from "@/components/sales-recorder";
 import { ReportsPanel } from "@/components/reports-panel";
 import { SupplierList } from "@/components/supplier-list";
-import { GradientOrb, GridBackground } from "@/components/3d/backgrounds";
+import { GradientOrb, GridBackground } from "@/components/marketing/backgrounds";
 import { formatCurrency } from "@/lib/utils";
 import type { Insight, Product, Sale, Expense, StockPrediction, Notification, Business } from "@/lib/types";
 import { Mail, TrendingUp, TrendingDown, IndianRupee, Package, AlertTriangle, Users, FileText } from "lucide-react";
-
-const DashboardScene = dynamic(
-  () => import("@/components/3d/dashboard-scene").then((m) => m.DashboardScene3D),
-  { ssr: false },
-);
 
 interface DashData {
   business: Business | null;
@@ -127,7 +121,6 @@ export default function DashboardPage() {
 
   return (
     <main className="relative min-h-screen bg-[#0a0a0a] p-6 overflow-hidden">
-      <DashboardScene />
       <GridBackground />
       <GradientOrb className="w-[500px] h-[500px] -top-40 -right-40" color="#facc15" />
       <GradientOrb className="w-[400px] h-[400px] -bottom-20 -left-20" color="#f59e0b" delay={2} />
